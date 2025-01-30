@@ -1,44 +1,45 @@
-#Импорты
+# Импорты
 from aiogram.types import ReplyKeyboardMarkup
 from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from utils.db_requests import db_get_flats
 
-
-#Клавиатура "Админ Панель главное меню"
-def admin_builder_main_menu():
-
-    builder = ReplyKeyboardBuilder()
-
-    flats = db_get_flats()
-    for flat in flats:
-        builder.button(text=f"{flat}")
-    builder.adjust(2)
-
-    return builder.as_markup(resize_keyboard=True, one_time_keyboard=True)
-
-
-#Клавиатура "Админ действия с квартирой"
-admin_flat_action_keyboard = ReplyKeyboardMarkup(
+admin_keyboard_main = ReplyKeyboardMarkup(
     keyboard=[
-        [
-            KeyboardButton(text = "Инфо о квартире"),
-            KeyboardButton(text = "Список оборудования"),
-        ],
-        [
-            KeyboardButton(text = "Посчитать коммуналку"),
-            KeyboardButton(text = "Журнал счетчиков"),
-            KeyboardButton(text = "Выселение жильцов")
-        ],
-        [
-            KeyboardButton(text = "Назад")
-        ]
+        [KeyboardButton(text="Начать конференцию")],
+        [KeyboardButton(text="Настройки конференции")],
+        [KeyboardButton(text="Отправить рассылку")],
+    ],
+    resize_keyboard=True,
+    input_field_placeholder="Выберите действие:",
+    selective=True,
+)
+
+admin_keyboard_settings = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Изменить название")],
+        [KeyboardButton(text="Ввести опрос")],
+        [KeyboardButton(text="Ввести данные о спикерах")],
+        [KeyboardButton(text="Назад")],
+    ],
+    resize_keyboard=True,
+    input_field_placeholder="Выберите действие:",
+    selective=True,
+)
+
+admin_keyboard_conference = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Перейти к следующему спикеру")],
+        [KeyboardButton(text="Завершить конференцию")],
     ],
     resize_keyboard=True,
     one_time_keyboard=False,
-    input_field_placeholder="Выбирите действие:",
-    selective=True
+    selective=True,
 )
 
-
-
+admin_keyboard_in_develop = ReplyKeyboardMarkup(
+    keyboard=[[KeyboardButton(text="Назад")]],
+    resize_keyboard=True,
+    input_field_placeholder="Данная функция в разработке",
+    one_time_keyboard=True,
+    selective=True,
+)

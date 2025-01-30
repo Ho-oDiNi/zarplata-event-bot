@@ -2,10 +2,10 @@ from aiogram.filters import BaseFilter
 from aiogram.types import Message
 
 
-class IsAdminFilter(BaseFilter):
+class IsSpeakerFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
-        # admins_id = db_get_admins()
-        # if message.from_user.id in admins_id:
-        #     return True
+        speakers_id = db_get_users()
+        if message.from_user.id in speakers_id:
+            return True
 
         return False
