@@ -1,10 +1,16 @@
-#Импорты
+# Импорты
 from dotenv import dotenv_values
-import sqlite3 as sql
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import mysql.connector
 
-#Получение токена из файла .env
-config = dotenv_values('./config/.env')
-API_TOKEN = config['API_TOKEN']
-GOOGLE_URL = config['GOOGLE_URL']
-ADMIN = int(config['ADMIN'])
+# Получение токена из файла .env
+config = dotenv_values("./config/.env")
+API_TOKEN = config["API_TOKEN"]
+GOOGLE_URL = config["GOOGLE_URL"]
+ADMIN = int(config["ADMIN"])
+
+DB = mysql.connector.connect(
+    host=config["DB_HOST"],
+    user=config["DB_USER"],
+    password=config["DB_PASSWORD"],
+    database=config["DB_DATABASE"],
+)

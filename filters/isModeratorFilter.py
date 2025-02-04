@@ -3,10 +3,10 @@ from aiogram.types import Message
 from utils.requests import *
 
 
-class IsSpeakerFilter(BaseFilter):
+class IsModeratorFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
-        speakers_id = get_array_id(db_get_table("speakers"))
-        if message.from_user.id in speakers_id:
+        moderators_id = get_array_id(db_get_table("moderators"))
+        if message.from_user.id in moderators_id:
             return True
 
         return False

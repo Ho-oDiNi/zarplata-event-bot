@@ -1,1 +1,1 @@
-from . import isAdminFilter, isSpeakerFilter
+from . import isAdminFilter, isSpeakerFilter, isModeratorFilter, isUserFilter

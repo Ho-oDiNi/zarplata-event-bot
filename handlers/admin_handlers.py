@@ -1,11 +1,7 @@
-# Импорты
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 from keyboards.admin_ReplyKeyboards import *
-from aiogram.fsm.context import FSMContext
-from utils.states import Flat
-from keyboards.admin_InlineKeyboards import *
 from filters.isAdminFilter import IsAdminFilter
 
 router = Router()
@@ -16,11 +12,6 @@ router.message.filter(IsAdminFilter())
 @router.message(Command("menu", "start"))
 async def admin_handler_menu(message: Message):
     await message.answer(text=f"Выберите действие:", reply_markup=admin_keyboard_main)
-
-
-@router.message(F.text.lower() == "начать конференцию")
-async def admin_handler_start(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_conference)
 
 
 @router.message(F.text.lower() == "настройки конференции")
@@ -46,16 +37,6 @@ async def admin_handler_change_speakers(message: Message):
 @router.message(F.text.lower() == "отправить рассылку")
 async def admin_handler_send_mailing(message: Message):
     await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
-
-
-@router.message(F.text.lower() == "перейти к следующему спикеру")
-async def admin_handler_next_speaker(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
-
-
-@router.message(F.text.lower() == "завершить конференцию")
-async def admin_handler_stop(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_main)
 
 
 @router.message()

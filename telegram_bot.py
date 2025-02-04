@@ -1,20 +1,18 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
-from config.bot_config import GOOGLE_URL, API_TOKEN, ADMIN
-from callbacks import *
+from config.bot_config import GOOGLE_URL, API_TOKEN, ADMIN, DB
 from handlers import *
 from api_google.google_table import GoogleTable
 
 
 async def start_bot(bot: Bot):
-    admin_id = ADMIN
-    await bot.send_message(chat_id=admin_id, text="Бот перезапущен")
+    await bot.send_message(chat_id=ADMIN, text="Бот перезапущен")
 
 
 async def stop_bot(bot: Bot):
-    admin_id = ADMIN
-    await bot.send_message(chat_id=admin_id, text="Бот отключился")
+    DB.close()
+    await bot.send_message(chat_id=ADMIN, text="Бот отключился")
 
 
 async def main():
@@ -36,7 +34,8 @@ async def main():
 
     dp.include_routers(
         admin_handlers.router,
-        admin_callbacks.router,
+        moderator_handlers.router,
+        # moderators_callbacks.router,
         user_handlers.router,
         # user_callbacks.router
     )

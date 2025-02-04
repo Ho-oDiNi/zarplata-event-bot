@@ -1,1 +1,6 @@
-from . import admin_ReplyKeyboards, admin_InlineKeyboards, user_ReplyKeyboards, user_InlineKeyboards
+from . import (
+    admin_ReplyKeyboards,
+    moderator_ReplyKeyboards,
+    user_ReplyKeyboards,
+    user_InlineKeyboards,
+)
