@@ -1,5 +1,5 @@
 from aiogram import Router, F, Bot
-from aiogram.types import Message
+from aiogram.types import Message, URLInputFile
 from aiogram.filters import Command
 from keyboards.user_ReplyKeyboards import *
 from keyboards.user_InlineKeyboards import *
@@ -21,6 +21,16 @@ async def user_handler_menu(message: Message):
 async def user_handler_get_info(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
     await message.answer(text=f"{get_current_conference()['description']}")
+    await bot.send_photo(
+        chat_id=message.chat.id,
+        photo=URLInputFile(get_current_conference()["content"]),
+    )
+
+
+@router.message(F.text.lower() == "пройти опрос")
+async def user_handler_get_info(message: Message, bot: Bot):
+    await bot.send_chat_action(message.from_user.id, action="typing")
+    await message.answer(text=f"Вы готовы начать?", reply_markup=user_keyboard_survey())
 
 
 @router.message(F.text.lower() == "задать вопрос")

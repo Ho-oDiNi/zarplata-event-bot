@@ -41,7 +41,7 @@ def get_conference_speakers():
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
         f"""
-        SELECT `name`, `tg_id` 
+        SELECT *
         FROM `speakers` 
         WHERE `conference_id` = {get_current_conference()['id']}
         """
@@ -58,6 +58,21 @@ def get_current_conference():
         """
         SELECT * 
         FROM `conferences` 
+        WHERE `is_current` = 1
+        """
+    )
+    data = cursor.fetchone()
+    cursor.close()
+
+    return data
+
+
+def get_current_speaker():
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT * 
+        FROM `speakers` 
         WHERE `is_current` = 1
         """
     )

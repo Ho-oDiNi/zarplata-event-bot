@@ -2,6 +2,7 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher
 from config.bot_config import GOOGLE_URL, API_TOKEN, ADMIN, DB
+from callbacks import *
 from handlers import *
 from api_google.google_table import GoogleTable
 
@@ -37,7 +38,7 @@ async def main():
         moderator_handlers.router,
         # moderators_callbacks.router,
         user_handlers.router,
-        # user_callbacks.router
+        user_callbacks.router,
     )
 
     await bot.delete_webhook(drop_pending_updates=True)

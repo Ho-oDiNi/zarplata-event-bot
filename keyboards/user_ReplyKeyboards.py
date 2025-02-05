@@ -5,6 +5,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 user_keyboard_main = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="О конференции")],
+        [KeyboardButton(text="Пройти опрос")],
         [KeyboardButton(text="Задать вопрос")],
     ],
     resize_keyboard=True,
@@ -33,14 +34,6 @@ user_keyboard_confirm = ReplyKeyboardMarkup(
         ]
     ],
     resize_keyboard=True,
-    one_time_keyboard=True,
-    selective=True,
-)
-
-user_keyboard_in_develop = ReplyKeyboardMarkup(
-    keyboard=[[KeyboardButton(text="Назад")]],
-    resize_keyboard=True,
-    input_field_placeholder="Данная функция в разработке",
     one_time_keyboard=True,
     selective=True,
 )
