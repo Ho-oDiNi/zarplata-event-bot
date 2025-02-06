@@ -1,8 +1,10 @@
 from aiogram import Router, F, Bot
 from aiogram.types import Message, URLInputFile
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 from keyboards.user_ReplyKeyboards import *
 from keyboards.user_InlineKeyboards import *
+from utils.states import User
 
 router = Router()
 
@@ -59,6 +61,32 @@ async def user_handler_ask_management(message: Message, bot: Bot):
     )
 
 
+@router.message(User.question)
+async def user_handler_confirm_question(message: Message, state: FSMContext):
+    await state.update_data(question=message.text)
+    await state.set_state(User.confirm)
+    await message.answer(
+        text=f"Подтвердите отправку вопроса:\n{message.text}",
+        reply_markup=user_keyboard_confirm,
+    )
+
+
+@router.message(User.confirm)
+async def user_handler_send_question(message: Message, state: FSMContext, bot: Bot):
+    userState = await state.get_data()
+    if message.text.lower() == "отправить":
+        await bot.send_message(
+            chat_id=get_management_id(),
+            text=f"Для {userState['speaker']} вопрос: {userState['question']}\n ",
+        )
+        await message.answer(text=f"Вопрос отправлен модератору")
+
+    else:
+        await message.answer(text=f"Действие отменено")
+
+    await state.clear()
+
+
 @router.message()
-async def echo(message: Message):
+async def error_message(message: Message):
     await message.answer(text=f"Что-то пошло не так...\nПопробуйте ввести /menu")

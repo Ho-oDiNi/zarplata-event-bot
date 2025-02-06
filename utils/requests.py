@@ -80,3 +80,18 @@ def get_current_speaker():
     cursor.close()
 
     return data
+
+
+def get_field_by_id(field, field_id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `{field}` 
+        WHERE `id` = {field_id}
+        """
+    )
+    data = cursor.fetchone()
+    cursor.close()
+
+    return data
