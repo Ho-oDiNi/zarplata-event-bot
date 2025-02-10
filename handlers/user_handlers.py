@@ -78,6 +78,7 @@ async def user_handler_confirm(message: Message, state: FSMContext):
 async def user_handler_send(message: Message, state: FSMContext, bot: Bot):
     userState = await state.get_data()
     if message.text.lower() == "отправить":
+
         # await bot.send_message(
         #     chat_id=get_management_id(),
         #     text=f"Для {userState['speaker']} вопрос: {userState['question']}\n ",

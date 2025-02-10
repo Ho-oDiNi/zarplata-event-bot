@@ -1,12 +1,11 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from utils.requests import *
+from config.bot_config import MANAGER
+from utils.db_requests import *
 
 
 def user_keyboard_builder_feedback():
     builder = InlineKeyboardBuilder()
-    builder.button(
-        text="Связаться с администратором", url=f"tg://user?id={get_management_id()}"
-    )
+    builder.button(text="Связаться с администратором", url=f"tg://user?id={MANAGER}")
 
     return builder.as_markup()
 

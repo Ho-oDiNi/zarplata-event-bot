@@ -1,6 +1,6 @@
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
-from utils.requests import *
+from utils.db_requests import *
 
 
 # Кэшируется запрос к БД?

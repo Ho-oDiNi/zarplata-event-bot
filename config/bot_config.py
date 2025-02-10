@@ -6,6 +6,7 @@ config = dotenv_values("./config/.env")
 API_TOKEN = config["API_TOKEN"]
 GOOGLE_URL = config["GOOGLE_URL"]
 ADMIN = int(config["ADMIN"])
+MANAGER = int(config["MANAGER"])
 
 # Подключение к базе данных MySQL
 DB = mysql.connector.connect(

@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from keyboards.user_reply_keyboards import *
 from keyboards.user_inline_keyboards import *
-from utils.requests import *
+from utils.db_requests import *
 from utils.states import User
 
 router = Router()

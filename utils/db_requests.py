@@ -1,4 +1,4 @@
-from config.bot_config import DB, ADMIN
+from config.bot_config import DB
 
 
 # Переделать под параматизированнные запросы
@@ -23,18 +23,6 @@ def set_user(tg_id):
     cursor.execute(query)
     DB.commit()
     cursor.close()
-
-
-def get_array_id(data):
-    array_id = []
-    for row in data:
-        array_id.append(row["id"])
-
-    return array_id
-
-
-def get_management_id():
-    return ADMIN
 
 
 def get_event_speakers():
