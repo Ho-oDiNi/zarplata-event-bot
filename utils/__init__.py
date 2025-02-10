@@ -1,1 +1,1 @@
-from . import requests, states
+from . import requests, states, registers

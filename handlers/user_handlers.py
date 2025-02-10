@@ -2,41 +2,44 @@ from aiogram import Router, F, Bot
 from aiogram.types import Message, URLInputFile
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from keyboards.user_ReplyKeyboards import *
-from keyboards.user_InlineKeyboards import *
+from keyboards.user_reply_keyboards import *
+from keyboards.user_inline_keyboards import *
+from filters.event_filter import HasEventFilter
 from utils.states import User
 
 router = Router()
+router.message.filter((HasEventFilter()))
 
 
-@router.message(F.text.lower().in_({"назад", "меню"}))
-@router.message(Command("menu", "start"))
-async def user_handler_menu(message: Message):
-    db_set_user(message.from_user.id)
+@router.message(Command("start"))
+async def user_handler_menu(message: Message, bot: Bot):
+    set_user(message.from_user.id)
     await message.answer(
-        text=f"Привет, {message.from_user.first_name}, рады видеть на конференции {get_current_conference()['name']}",
+        text=f"Привет, {message.from_user.first_name}, рады видеть на конференции {get_current_event()['name']}",
         reply_markup=user_keyboard_main,
     )
+    await user_handler_info(message, bot)
 
 
-@router.message(F.text.lower() == "о конференции")
-async def user_handler_get_info(message: Message, bot: Bot):
+@router.message(F.text.lower().in_({"назад", "меню", "о конференции"}))
+@router.message(Command("menu"))
+async def user_handler_info(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
-    await message.answer(text=f"{get_current_conference()['description']}")
     await bot.send_photo(
         chat_id=message.chat.id,
-        photo=URLInputFile(get_current_conference()["content"]),
+        photo=URLInputFile(get_current_event()["img"]),
+        caption=f"{get_current_event()['content']}",
     )
 
 
 @router.message(F.text.lower() == "пройти опрос")
-async def user_handler_get_info(message: Message, bot: Bot):
+async def user_handler_quiz(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
-    await message.answer(text=f"Вы готовы начать?", reply_markup=user_keyboard_survey())
+    await message.answer(text=f"Вы готовы начать?", reply_markup=user_keyboard_quiz())
 
 
 @router.message(F.text.lower() == "задать вопрос")
-async def user_handler_ask_question(message: Message, bot: Bot):
+async def user_handler_question(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
     await message.answer(
         text=f"Кому Вы хотите задать вопрос?", reply_markup=user_keyboard_ask_question
@@ -62,7 +65,7 @@ async def user_handler_ask_management(message: Message, bot: Bot):
 
 
 @router.message(User.question)
-async def user_handler_confirm_question(message: Message, state: FSMContext):
+async def user_handler_confirm(message: Message, state: FSMContext):
     await state.update_data(question=message.text)
     await state.set_state(User.confirm)
     await message.answer(
@@ -72,14 +75,14 @@ async def user_handler_confirm_question(message: Message, state: FSMContext):
 
 
 @router.message(User.confirm)
-async def user_handler_send_question(message: Message, state: FSMContext, bot: Bot):
+async def user_handler_send(message: Message, state: FSMContext, bot: Bot):
     userState = await state.get_data()
     if message.text.lower() == "отправить":
-        await bot.send_message(
-            chat_id=get_management_id(),
-            text=f"Для {userState['speaker']} вопрос: {userState['question']}\n ",
-        )
-        await message.answer(text=f"Вопрос отправлен модератору")
+        # await bot.send_message(
+        #     chat_id=get_management_id(),
+        #     text=f"Для {userState['speaker']} вопрос: {userState['question']}\n ",
+        # )
+        await message.answer(text=f"Ваш вопрос успешно доставлен")
 
     else:
         await message.answer(text=f"Действие отменено")

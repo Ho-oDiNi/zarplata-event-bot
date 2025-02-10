@@ -1,4 +1,3 @@
-# Импорты
 from dotenv import dotenv_values
 import mysql.connector
 
@@ -8,6 +7,7 @@ API_TOKEN = config["API_TOKEN"]
 GOOGLE_URL = config["GOOGLE_URL"]
 ADMIN = int(config["ADMIN"])
 
+# Подключение к базе данных MySQL
 DB = mysql.connector.connect(
     host=config["DB_HOST"],
     user=config["DB_USER"],

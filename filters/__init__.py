@@ -1,1 +1,1 @@
-from . import isAdminFilter, isSpeakerFilter, isModeratorFilter, isUserFilter
+from . import admin_filter, event_filter

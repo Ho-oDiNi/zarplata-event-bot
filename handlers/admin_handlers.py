@@ -1,8 +1,8 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
-from keyboards.admin_ReplyKeyboards import *
-from filters.isAdminFilter import IsAdminFilter
+from keyboards.admin_reply_keyboards import *
+from filters.admin_filter import IsAdminFilter
 
 router = Router()
 router.message.filter(IsAdminFilter())
@@ -25,7 +25,7 @@ async def admin_handler_change_title(message: Message):
 
 
 @router.message(F.text.lower() == "ввести опрос")
-async def admin_handler_change_survey(message: Message):
+async def admin_handler_change_quiz(message: Message):
     await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
 
 

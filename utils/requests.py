@@ -2,7 +2,7 @@ from config.bot_config import DB, ADMIN
 
 
 # Переделать под параматизированнные запросы
-def db_get_table(table):
+def get_table(table):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(f"SELECT * FROM {table}")
     data = cursor.fetchall()
@@ -12,13 +12,13 @@ def db_get_table(table):
 
 
 # Переделать тк id растет
-def db_set_user(tg_id):
+def set_user(tg_id):
     cursor = DB.cursor()
     query = f"""
-        INSERT IGNORE INTO `users` (`tg_id`, `conference_id`) 
-        VALUES ({tg_id}, {get_current_conference()['id']})
+        INSERT IGNORE INTO `users` (`tg_id`, `event_id`) 
+        VALUES ({tg_id}, {get_current_event()['id']})
         ON DUPLICATE KEY UPDATE
-        `conference_id` = {get_current_conference()['id']}
+        `event_id` = {get_current_event()['id']}
         """
     cursor.execute(query)
     DB.commit()
@@ -37,13 +37,13 @@ def get_management_id():
     return ADMIN
 
 
-def get_conference_speakers():
+def get_event_speakers():
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
         f"""
         SELECT *
         FROM `speakers` 
-        WHERE `conference_id` = {get_current_conference()['id']}
+        WHERE `event_id` = {get_current_event()['id']}
         """
     )
     data = cursor.fetchall()
@@ -52,28 +52,13 @@ def get_conference_speakers():
     return data
 
 
-def get_current_conference():
+def get_current_event():
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
         """
         SELECT * 
-        FROM `conferences` 
-        WHERE `is_current` = 1
-        """
-    )
-    data = cursor.fetchone()
-    cursor.close()
-
-    return data
-
-
-def get_current_speaker():
-    cursor = DB.cursor(dictionary=True)
-    cursor.execute(
-        """
-        SELECT * 
-        FROM `speakers` 
-        WHERE `is_current` = 1
+        FROM `events` 
+        WHERE `date` BETWEEN CURDATE() - INTERVAL 1 DAY AND CURDATE() + INTERVAL 2 DAY;
         """
     )
     data = cursor.fetchone()
