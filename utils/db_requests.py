@@ -55,16 +55,31 @@ def get_current_event():
     return data
 
 
-def get_field_by_id(field, field_id):
+def get_by_id(table, id):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
         f"""
         SELECT *
-        FROM `{field}` 
-        WHERE `id` = {field_id}
+        FROM `{table}` 
+        WHERE `id` = {id}
         """
     )
     data = cursor.fetchone()
     cursor.close()
 
     return data
+
+
+def update_by_id(table, field, id, value):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        UPDATE `{table}`
+        SET `{field}` = '{value}'
+        WHERE `id` = {id}
+        """
+    )
+    cursor.close()
+    DB.commit()
+
+    return

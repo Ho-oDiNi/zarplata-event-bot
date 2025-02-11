@@ -1,5 +1,6 @@
-from config.bot_config import GOOGLE_URL
 import pygsheets
+from config.bot_config import GOOGLE_URL
+from utils.db_requests import *
 
 
 class GoogleTable:
@@ -27,37 +28,27 @@ class GoogleTable:
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     # Удобное форматирование ячейки
-    def Cell(self, column: str, row):
+    def Cell(self, column, row) -> str:
         return column + str(row)
 
-    # Количество спикеров
-    def get_count_users(self):
-        googlesheet_client: pygsheets.client.Client = self._get_googlesheet_client()
-        wks: pygsheets.Spreadsheet = self._get_googlesheet_by_url(
-            googlesheet_client, "test"
-        )
+    def getNextQuestionCell(self, speaker_id):
+        cell = get_by_id("speakers", speaker_id)["question_cell"]
+        next_cell = cell[:1] + str(int(cell[1:]) + 1)
+        update_by_id("speakers", "question_cell", speaker_id, next_cell)
 
-        cell = self.Cell("A", 2)
-        count_users = int(wks.get_value(cell))
-
-        return count_users
+        return next_cell
 
     #  - - - - - - - - - -  Функции Inline клавиатур  - - - - - - - - - - - - - - - - - #
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-    # Запись нового пользователя в таблицу
-    def login_agree(self, user_id, flat):
+    def setQuestion(self, speaker_id, question):
+        next_cell = self.getNextQuestionCell(speaker_id)
+
         googlesheet_client: pygsheets.client.Client = self._get_googlesheet_client()
         wks: pygsheets.Spreadsheet = self._get_googlesheet_by_url(
-            googlesheet_client, "test"
+            googlesheet_client, "Вопросы спикерам"
         )
 
-        row = self.get_k_users() + 2
-
-        cell_user_id = wks.cell(f"F{row}")
-        cell_user_id.set_value(user_id)
-
-        cell_flat = wks.cell(f"G{row}")
-        cell_flat.set_value(flat)
+        wks.cell(next_cell).set_value(question)
 
         return

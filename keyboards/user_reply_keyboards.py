@@ -24,15 +24,3 @@ user_keyboard_ask_question = ReplyKeyboardMarkup(
     input_field_placeholder="Выберете кому хотите задать вопрос:",
     selective=True,
 )
-
-user_keyboard_confirm = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton(text="Отправить"),
-            KeyboardButton(text="Отмена"),
-        ]
-    ],
-    resize_keyboard=True,
-    one_time_keyboard=True,
-    selective=True,
-)

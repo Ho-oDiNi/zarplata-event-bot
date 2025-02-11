@@ -1,5 +1,5 @@
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from config.bot_config import MANAGER
+from aiogram.utils.keyboard import *
 from utils.db_requests import *
 
 
@@ -19,7 +19,7 @@ def user_keyboard_builder_speakers():
             text=f"{speaker['name']}",
             callback_data=f"ask_speaker?id={speaker['id']}",
         )
-    builder.adjust(1, 2)
+    builder.adjust(2)
 
     return builder.as_markup(one_time_keyboard=True)
 
@@ -29,3 +29,11 @@ def user_keyboard_quiz():
     builder.button(text="Поехали", callback_data="start_quiz")
 
     return builder.as_markup()
+
+
+user_keyboard_confirm = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Отправить", callback_data="send_question")],
+        [InlineKeyboardButton(text="Отмена", callback_data="none")],
+    ]
+)

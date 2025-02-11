@@ -29,6 +29,7 @@ async def user_handler_info(message: Message, bot: Bot):
         chat_id=message.chat.id,
         photo=URLInputFile(get_current_event()["img"]),
         caption=f"{get_current_event()['content']}",
+        reply_markup=user_keyboard_main,
     )
 
 
@@ -67,7 +68,6 @@ async def user_handler_ask_management(message: Message, bot: Bot):
 @router.message(User.question)
 async def user_handler_confirm(message: Message, state: FSMContext):
     await state.update_data(question=message.text)
-    await state.set_state(User.confirm)
     await message.answer(
         text=f"Подтвердите отправку вопроса:\n{message.text}",
         reply_markup=user_keyboard_confirm,
@@ -76,13 +76,10 @@ async def user_handler_confirm(message: Message, state: FSMContext):
 
 @router.message(User.confirm)
 async def user_handler_send(message: Message, state: FSMContext, bot: Bot):
-    userState = await state.get_data()
+    await bot.send_chat_action(message.from_user.id, action="typing")
     if message.text.lower() == "отправить":
-
-        # await bot.send_message(
-        #     chat_id=get_management_id(),
-        #     text=f"Для {userState['speaker']} вопрос: {userState['question']}\n ",
-        # )
+        userState = await state.get_data()
+        bot.google_table.setQuestion(userState["speaker_id"], userState["question"])
         await message.answer(text=f"Ваш вопрос успешно доставлен")
 
     else:
