@@ -28,7 +28,7 @@ class GoogleTable:
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
     # Удобное форматирование ячейки
-    def Cell(self, column, row) -> str:
+    def fCell(self, column, row) -> str:
         return column + str(row)
 
     def getNextQuestionCell(self, speaker_id):
@@ -48,7 +48,4 @@ class GoogleTable:
         wks: pygsheets.Spreadsheet = self._get_googlesheet_by_url(
             googlesheet_client, "Вопросы спикерам"
         )
-
         wks.cell(next_cell).set_value(question)
-
-        return

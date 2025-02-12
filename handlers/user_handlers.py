@@ -25,12 +25,18 @@ async def user_handler_menu(message: Message, bot: Bot):
 @router.message(Command("menu"))
 async def user_handler_info(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
-    await bot.send_photo(
-        chat_id=message.chat.id,
-        photo=URLInputFile(get_current_event()["img"]),
-        caption=f"{get_current_event()['content']}",
-        reply_markup=user_keyboard_main,
-    )
+    try:
+        await bot.send_photo(
+            chat_id=message.chat.id,
+            photo=URLInputFile(get_current_event()["img"]),
+            caption=f"{get_current_event()['content']}",
+            reply_markup=user_keyboard_main,
+        )
+    except:
+        await message.answer(
+            text=f"{get_current_event()['content']}",
+            reply_markup=user_keyboard_main,
+        )
 
 
 @router.message(F.text.lower() == "пройти опрос")
@@ -72,20 +78,6 @@ async def user_handler_confirm(message: Message, state: FSMContext):
         text=f"Подтвердите отправку вопроса:\n{message.text}",
         reply_markup=user_keyboard_confirm,
     )
-
-
-@router.message(User.confirm)
-async def user_handler_send(message: Message, state: FSMContext, bot: Bot):
-    await bot.send_chat_action(message.from_user.id, action="typing")
-    if message.text.lower() == "отправить":
-        userState = await state.get_data()
-        bot.google_table.setQuestion(userState["speaker_id"], userState["question"])
-        await message.answer(text=f"Ваш вопрос успешно доставлен")
-
-    else:
-        await message.answer(text=f"Действие отменено")
-
-    await state.clear()
 
 
 @router.message()
