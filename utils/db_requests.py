@@ -22,7 +22,8 @@ def set_user(tg_id):
         INSERT IGNORE INTO `users` (`tg_id`, `event_id`) 
         VALUES ({tg_id}, {get_current_event()['id']})
         ON DUPLICATE KEY UPDATE
-        `event_id` = {get_current_event()['id']}
+        `event_id` = {get_current_event()['id']},
+        `is_passed` = 0
         """
     cursor.execute(query)
     DB.commit()
@@ -86,8 +87,6 @@ def update_by_id(table, field, id, value):
     cursor.close()
     DB.commit()
 
-    return
-
 
 def get_next_quiz(current_id=None):
     cursor = DB.cursor(dictionary=True)
@@ -142,3 +141,22 @@ def get_current_variants():
     cursor.close()
 
     return data
+
+
+def get_by_tg_id(tg_id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `users` 
+        WHERE `tg_id` = {tg_id}
+        """
+    )
+    data = cursor.fetchone()
+    cursor.close()
+
+    return data
+
+
+def set_user_passed(tg_id):
+    update_by_id("users", "is_passed", get_by_tg_id(tg_id)["id"], 1)

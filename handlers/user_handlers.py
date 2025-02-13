@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from keyboards.user_reply_keyboards import *
 from keyboards.user_inline_keyboards import *
 from filters.event_filter import HasEventFilter
+from utils.registers import *
 from utils.states import User
 
 router = Router()
@@ -25,18 +26,12 @@ async def user_handler_menu(message: Message, bot: Bot):
 @router.message(Command("menu"))
 async def user_handler_info(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
-    try:
-        await bot.send_photo(
-            chat_id=message.chat.id,
-            photo=URLInputFile(get_current_event()["img"]),
-            caption=f"{get_current_event()['content']}",
-            reply_markup=user_keyboard_main,
-        )
-    except:
-        await message.answer(
-            text=f"{get_current_event()['content']}",
-            reply_markup=user_keyboard_main,
-        )
+    await bot.send_photo_if_exist(
+        message.chat.id,
+        URLInputFile(get_current_event()["img"]),
+        get_current_event()["content"],
+        user_keyboard_main,
+    )
 
 
 @router.message(F.text.lower() == "пройти опрос")

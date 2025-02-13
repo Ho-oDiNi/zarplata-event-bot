@@ -16,14 +16,17 @@ async def main():
             super().__init__(token)
             self.google_table: GoogleTable = google_table
 
+        async def send_photo_if_exist(self, tg_id, img, message, keyboard):
+            await send_photo_register(self, tg_id, img, message, keyboard)
+
     bot: ZPEventBot = ZPEventBot(
         token=API_TOKEN,
         google_table=GoogleTable("config/google_config.json", GOOGLE_URL),
     )
     dp = Dispatcher()
 
-    dp.startup.register(start_bot)
-    dp.shutdown.register(stop_bot)
+    dp.startup.register(start_bot_register)
+    dp.shutdown.register(stop_bot_register)
 
     dp.include_routers(
         admin_handlers.router,
