@@ -8,6 +8,7 @@ def user_keyboard_builder_feedback():
     builder.button(text="Связаться с администратором", url=f"tg://user?id={MANAGER}")
     builder.button(text="Назад", callback_data=f"none")
 
+    builder.adjust(1)
     return builder.as_markup()
 
 
@@ -20,8 +21,8 @@ def user_keyboard_builder_speakers():
             text=f"{speaker['name']}",
             callback_data=f"ask_speaker?id={speaker['id']}",
         )
-    builder.adjust(2)
 
+    builder.adjust(2)
     return builder.as_markup(one_time_keyboard=True)
 
 

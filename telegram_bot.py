@@ -16,8 +16,8 @@ async def main():
             super().__init__(token)
             self.google_table: GoogleTable = google_table
 
-        async def send_photo_if_exist(self, tg_id, img, message, keyboard):
-            return await send_photo_register(self, tg_id, img, message, keyboard)
+        async def send_photo_if_exist(self, chat_id, caption, text, reply_markup=None):
+            return await send_photo_register(self, chat_id, caption, text, reply_markup)
 
     bot: ZPEventBot = ZPEventBot(
         token=API_TOKEN,

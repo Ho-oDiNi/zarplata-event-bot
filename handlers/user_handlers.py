@@ -7,6 +7,7 @@ from keyboards.user_inline_keyboards import *
 from filters.event_filter import HasEventFilter
 from utils.registers import *
 from utils.states import User
+from config.bot_config import IMG
 
 router = Router()
 router.message.filter((HasEventFilter()))
@@ -28,14 +29,14 @@ async def user_handler_info(message: Message, bot: Bot):
     try:
         await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     except:
-        print("Not found")
+        print("Msg not found")
 
     await bot.send_chat_action(message.from_user.id, action="typing")
     msg = await bot.send_photo_if_exist(
-        message.chat.id,
-        URLInputFile(get_current_event()["img"]),
-        get_current_event()["content"],
-        user_keyboard_main,
+        chat_id=message.chat.id,
+        caption=URLInputFile(IMG),
+        text=get_current_event()["content"],
+        reply_markup=user_keyboard_main,
     )
 
     await bot.delete_message(message.from_user.id, message.message_id)
@@ -47,8 +48,9 @@ async def user_handler_quiz(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Вы готовы начать?",
         reply_markup=user_keyboard_survey_start,
     )
@@ -62,8 +64,9 @@ async def user_handler_question(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Кому Вы хотите задать вопрос?",
         reply_markup=user_keyboard_ask_question,
     )
@@ -77,8 +80,9 @@ async def user_handler_ask_speaker(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Выберете спикера",
         reply_markup=user_keyboard_builder_speakers(),
     )
@@ -92,8 +96,9 @@ async def user_handler_ask_management(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Задайте любой интересующий Вас вопрос",
         reply_markup=user_keyboard_builder_feedback(),
     )
@@ -108,8 +113,9 @@ async def user_handler_confirm(message: Message, state: FSMContext, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
 
     await state.update_data(question=message.text)
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Подтвердите отправку вопроса:\n{message.text}",
         reply_markup=user_keyboard_confirm,
     )
@@ -123,8 +129,9 @@ async def error_message(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Что-то пошло не так...\nПопробуйте ввести /menu",
     )
 

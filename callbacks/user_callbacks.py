@@ -4,6 +4,7 @@ from aiogram.types import CallbackQuery, URLInputFile
 from keyboards.user_reply_keyboards import *
 from keyboards.user_inline_keyboards import *
 from utils.states import User, Survey
+from config.bot_config import IMG
 
 router = Router()
 
@@ -13,8 +14,9 @@ async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await bot.delete_message(callback.from_user.id, get_msg_id(callback.from_user.id))
 
     if get_by_tg_id(callback.from_user.id)["is_passed"]:
-        msg = await bot.send_message(
+        msg = await bot.send_photo_if_exist(
             chat_id=callback.from_user.id,
+            caption=URLInputFile(IMG),
             text="Вы уже проходили опрос",
             reply_markup=user_keyboard_main,
         )
@@ -27,10 +29,10 @@ async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
 
     await state.update_data(quizId=quiz["id"])
     msg = await bot.send_photo_if_exist(
-        callback.from_user.id,
-        URLInputFile(quiz["img"]),
-        f"{quiz["name"]}\n{quiz["content"]}",
-        user_keyboard_builder_variants(quiz["id"]),
+        chat_id=callback.from_user.id,
+        caption=URLInputFile(quiz["img"]),
+        text=f"{quiz["name"]}\n{quiz["content"]}",
+        reply_markup=user_keyboard_builder_variants(quiz["id"]),
     )
 
     set_msg_id(callback.from_user.id, msg.message_id)
@@ -41,8 +43,9 @@ async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
     set_user_passed(callback.from_user.id)
     await bot.delete_message(callback.from_user.id, get_msg_id(callback.from_user.id))
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
+        caption=URLInputFile(IMG),
         text="Результаты отправлены на доску",
         reply_markup=user_keyboard_main,
     )
@@ -62,18 +65,19 @@ async def walkthrough_survey(callback: CallbackQuery, state: FSMContext, bot: Bo
     quiz = get_next_quiz(data["quizId"])
 
     if quiz == None:
-        msg = await bot.send_message(
+        msg = await bot.send_photo_if_exist(
             chat_id=callback.from_user.id,
             text="Поздравляем, ты ответил на все вопросы",
+            caption=URLInputFile(IMG),
             reply_markup=user_keyboard_survey_end,
         )
     else:
         await state.update_data(quizId=quiz["id"])
         msg = await bot.send_photo_if_exist(
-            callback.from_user.id,
-            URLInputFile(quiz["img"]),
-            f"{quiz["name"]}\n{quiz["content"]}",
-            user_keyboard_builder_variants(quiz["id"]),
+            chat_id=callback.from_user.id,
+            caption=URLInputFile(quiz["img"]),
+            text=f"{quiz["name"]}\n{quiz["content"]}",
+            reply_markup=user_keyboard_builder_variants(quiz["id"]),
         )
 
     set_msg_id(callback.from_user.id, msg.message_id)
@@ -85,8 +89,9 @@ async def ask_question_speaker(callback: CallbackQuery, state: FSMContext, bot: 
 
     await state.update_data(speaker_id=callback.data.partition("id=")[2])
     await state.set_state(User.question)
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Введите вопрос:",
         reply_markup=user_keyboard_cancel,
     )
@@ -100,8 +105,9 @@ async def send_question_speaker(callback: CallbackQuery, state: FSMContext, bot:
 
     userState = await state.get_data()
     bot.google_table.setQuestion(userState["speaker_id"], userState["question"])
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Ваш вопрос успешно доставлен",
         reply_markup=user_keyboard_main,
     )
@@ -114,8 +120,9 @@ async def send_question_speaker(callback: CallbackQuery, state: FSMContext, bot:
 async def cancel(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await bot.delete_message(callback.from_user.id, get_msg_id(callback.from_user.id))
 
-    msg = await bot.send_message(
+    msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
+        caption=URLInputFile(IMG),
         text=f"Действие отменено",
         reply_markup=user_keyboard_main,
     )

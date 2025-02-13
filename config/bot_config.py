@@ -15,3 +15,5 @@ DB = mysql.connector.connect(
     password=config["DB_PASSWORD"],
     database=config["DB_DATABASE"],
 )
+
+IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Plansza_pasowa.svg/1920px-Plansza_pasowa.svg.png"
