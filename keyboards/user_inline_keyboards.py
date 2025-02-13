@@ -6,6 +6,7 @@ from utils.db_requests import *
 def user_keyboard_builder_feedback():
     builder = InlineKeyboardBuilder()
     builder.button(text="Связаться с администратором", url=f"tg://user?id={MANAGER}")
+    builder.button(text="Назад", callback_data=f"none")
 
     return builder.as_markup()
 
@@ -52,6 +53,12 @@ user_keyboard_survey_end = InlineKeyboardMarkup(
 user_keyboard_confirm = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Отправить", callback_data="send_question")],
+        [InlineKeyboardButton(text="Отмена", callback_data="none")],
+    ]
+)
+
+user_keyboard_cancel = InlineKeyboardMarkup(
+    inline_keyboard=[
         [InlineKeyboardButton(text="Отмена", callback_data="none")],
     ]
 )

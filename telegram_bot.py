@@ -17,7 +17,7 @@ async def main():
             self.google_table: GoogleTable = google_table
 
         async def send_photo_if_exist(self, tg_id, img, message, keyboard):
-            await send_photo_register(self, tg_id, img, message, keyboard)
+            return await send_photo_register(self, tg_id, img, message, keyboard)
 
     bot: ZPEventBot = ZPEventBot(
         token=API_TOKEN,

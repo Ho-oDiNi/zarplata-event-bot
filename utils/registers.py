@@ -2,20 +2,22 @@ from aiogram import Bot
 from config.bot_config import ADMIN, DB
 
 
-async def send_photo_register(bot: Bot, tg_id, img, message, keyboard):
+async def send_photo_register(bot: Bot, tg_id, img, user_message, keyboard):
     try:
-        await bot.send_photo(
+        msg = await bot.send_photo(
             chat_id=tg_id,
             photo=img,
-            caption=message,
+            caption=user_message,
             reply_markup=keyboard,
         )
     except:
-        await bot.send_message(
+        msg = await bot.send_message(
             chat_id=tg_id,
-            text=message,
+            text=user_message,
             reply_markup=keyboard,
         )
+    finally:
+        return msg
 
 
 async def start_bot_register(bot: Bot):

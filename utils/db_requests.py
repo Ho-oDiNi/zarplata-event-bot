@@ -160,3 +160,11 @@ def get_by_tg_id(tg_id):
 
 def set_user_passed(tg_id):
     update_by_id("users", "is_passed", get_by_tg_id(tg_id)["id"], 1)
+
+
+def get_msg_id(tg_id):
+    return get_by_tg_id(tg_id)["msg_id"]
+
+
+def set_msg_id(tg_id, msg_id):
+    update_by_id("users", "msg_id", get_by_tg_id(tg_id)["id"], msg_id)
