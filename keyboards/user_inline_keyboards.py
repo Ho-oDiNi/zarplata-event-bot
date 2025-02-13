@@ -24,11 +24,29 @@ def user_keyboard_builder_speakers():
     return builder.as_markup(one_time_keyboard=True)
 
 
-def user_keyboard_quiz():
+def user_keyboard_builder_variants(quiz_id):
     builder = InlineKeyboardBuilder()
-    builder.button(text="Поехали", callback_data="start_quiz")
+
+    for variant in get_quiz_variants(quiz_id):
+        builder.button(
+            text=f"{variant['name']}",
+            callback_data=f"survey_answer?id={variant['id']}",
+        )
 
     return builder.as_markup()
+
+
+user_keyboard_survey_start = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Поехали", callback_data="survey_start")],
+    ]
+)
+
+user_keyboard_survey_end = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Завершить", callback_data="survey_end")],
+    ]
+)
 
 
 user_keyboard_confirm = InlineKeyboardMarkup(

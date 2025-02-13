@@ -1,4 +1,5 @@
 import pygsheets
+
 from config.bot_config import GOOGLE_URL
 from utils.db_requests import *
 
@@ -12,6 +13,15 @@ class GoogleTable:
     ) -> None:
         self.credence_service_file = credence_service_file
         self.googlesheet_file_url = googlesheet_file_url
+        self.googlesheet_client: pygsheets.client.Client = (
+            self._get_googlesheet_client()
+        )
+        self.wksSurvey: pygsheets.Spreadsheet = self._get_googlesheet_by_url(
+            self.googlesheet_client, "Результаты опроса"
+        )
+        self.wksSpeakers: pygsheets.Spreadsheet = self._get_googlesheet_by_url(
+            self.googlesheet_client, "Вопросы спикерам"
+        )
 
     def _get_googlesheet_by_url(
         self, googlesheet_client: pygsheets.client.Client, sheet_name: str
@@ -43,9 +53,8 @@ class GoogleTable:
 
     def setQuestion(self, speaker_id, question):
         next_cell = self.getNextQuestionCell(speaker_id)
+        self.wksSpeakers.cell(next_cell).set_value(question)
 
-        googlesheet_client: pygsheets.client.Client = self._get_googlesheet_client()
-        wks: pygsheets.Spreadsheet = self._get_googlesheet_by_url(
-            googlesheet_client, "Вопросы спикерам"
-        )
-        wks.cell(next_cell).set_value(question)
+    def updateSurvey(self, variant_id):
+        variant = get_by_id("variants", variant_id)
+        self.wksSurvey.cell(variant["cell"]).set_value(variant["result"])

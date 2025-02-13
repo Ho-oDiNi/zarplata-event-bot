@@ -1,17 +1,21 @@
 from config.bot_config import DB
 
 
-# Переделать под параматизированнные запросы
 def get_table(table):
     cursor = DB.cursor(dictionary=True)
-    cursor.execute(f"SELECT * FROM {table}")
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `speakers` 
+        WHERE `event_id` = {get_current_event()['id']}
+        """
+    )
     data = cursor.fetchall()
     cursor.close()
 
     return data
 
 
-# Переделать тк id растет
 def set_user(tg_id):
     cursor = DB.cursor()
     query = f"""
@@ -83,3 +87,58 @@ def update_by_id(table, field, id, value):
     DB.commit()
 
     return
+
+
+def get_next_quiz(current_id=None):
+    cursor = DB.cursor(dictionary=True)
+    query = f"""
+        SELECT *
+        FROM `quizes` 
+        WHERE `event_id` = {get_current_event()['id']} 
+        """
+    if current_id != None:
+        query += f"AND `id` > {current_id} "
+
+    query += f"LIMIT 1"
+
+    cursor.execute(query)
+    data = cursor.fetchone()
+    cursor.close()
+
+    return data
+
+
+def get_quiz_variants(id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `variants` 
+        WHERE `quiz_id` = {id}
+        """
+    )
+    data = cursor.fetchall()
+    cursor.close()
+
+    return data
+
+
+def increment_variant(id):
+    result = get_by_id("variants", id)["result"]
+    update_by_id("variants", "result", id, result + 1)
+
+
+def get_current_variants():
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM variants
+        JOIN quizes ON variants.quiz_id = quizes.id
+        WHERE quizes.event_id = {get_current_event()['id']}
+        """
+    )
+    data = cursor.fetchall()
+    cursor.close()
+
+    return data

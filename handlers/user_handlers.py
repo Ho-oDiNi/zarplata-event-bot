@@ -11,7 +11,7 @@ router = Router()
 router.message.filter((HasEventFilter()))
 
 
-@router.message(Command("start"))
+@router.message(Command("start", "restart"))
 async def user_handler_menu(message: Message, bot: Bot):
     set_user(message.from_user.id)
     await message.answer(
@@ -42,7 +42,9 @@ async def user_handler_info(message: Message, bot: Bot):
 @router.message(F.text.lower() == "пройти опрос")
 async def user_handler_quiz(message: Message, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
-    await message.answer(text=f"Вы готовы начать?", reply_markup=user_keyboard_quiz())
+    await message.answer(
+        text=f"Вы готовы начать?", reply_markup=user_keyboard_survey_start
+    )
 
 
 @router.message(F.text.lower() == "задать вопрос")

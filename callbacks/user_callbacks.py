@@ -3,15 +3,60 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from keyboards.user_reply_keyboards import *
 from keyboards.user_inline_keyboards import *
-from utils.db_requests import *
-from utils.states import User
+from utils.states import User, Survey
 
 router = Router()
 
 
-@router.callback_query(F.data == "start_quiz")
-async def walkthrough_quiz(callback: CallbackQuery):
-    await callback.answer(text=f"В разработке")
+@router.callback_query(F.data == "survey_start")
+async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    quiz = get_next_quiz()
+
+    await state.set_state(Survey.quizId)
+    await state.update_data(quizId=quiz["id"])
+    await state.update_data(isChange={"0": 0})
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"{quiz["name"]}\n{quiz["content"]}",
+        reply_markup=user_keyboard_builder_variants(quiz["id"]),
+    )
+    await callback.message.edit_reply_markup()
+
+
+@router.callback_query(F.data == "survey_end")
+async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    await state.clear()
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text="Результаты отправлены на доску",
+        reply_markup=user_keyboard_main,
+    )
+    await callback.message.edit_reply_markup()
+
+
+@router.callback_query(F.data.startswith("survey_answer"))
+async def walkthrough_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    increment_variant(callback.data.partition("id=")[2])
+    bot.google_table.updateSurvey(callback.data.partition("id=")[2])
+
+    data = await state.get_data()
+    quiz = get_next_quiz(data["quizId"])
+
+    if quiz == None:
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text="Поздравляем, ты ответил на все вопросы",
+            reply_markup=user_keyboard_survey_end,
+        )
+    else:
+        await state.update_data(quizId=quiz["id"])
+        await bot.send_message(
+            chat_id=callback.from_user.id,
+            text=f"{quiz["name"]}\n{quiz["content"]}",
+            reply_markup=user_keyboard_builder_variants(quiz["id"]),
+        )
+
+    await callback.message.edit_reply_markup()
 
 
 @router.callback_query(F.data.startswith("ask_speaker"))
