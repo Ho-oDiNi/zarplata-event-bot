@@ -124,12 +124,14 @@ async def user_handler_ask_management(message: Message, bot: Bot):
 async def user_handler_confirm(message: Message, state: FSMContext, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
-
     await state.update_data(question=message.text)
+
+    userState = await state.get_data()
+    speaker = get_by_id("speakers", userState["speaker_id"])
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(IMG),
-        text=f"Подтвердите отправку вопроса:\n{message.text}",
+        caption=URLInputFile(speaker["img"]),
+        text=f"Подтвердите отправку вопроса для {speaker["name"]}:\n{message.text}",
         reply_markup=user_keyboard_confirm,
     )
 

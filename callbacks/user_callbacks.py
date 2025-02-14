@@ -76,12 +76,16 @@ async def walkthrough_survey(callback: CallbackQuery, state: FSMContext, bot: Bo
 async def ask_question_speaker(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await bot.delete_message(callback.from_user.id, get_msg_id(callback.from_user.id))
 
-    await state.update_data(speaker_id=callback.data.partition("id=")[2])
+    speaker = get_by_id(
+        "speakers",
+        callback.data.partition("id=")[2],
+    )
+    await state.update_data(speaker_id=speaker["id"])
     await state.set_state(User.question)
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=URLInputFile(IMG),
-        text=f"Введите вопрос:",
+        caption=URLInputFile(speaker["img"]),
+        text=f"Введите вопрос для {speaker["name"]}:",
         reply_markup=user_keyboard_cancel,
     )
 
