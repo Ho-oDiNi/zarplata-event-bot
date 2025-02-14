@@ -13,17 +13,6 @@ router = Router()
 async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await bot.delete_message(callback.from_user.id, get_msg_id(callback.from_user.id))
 
-    if get_by_tg_id(callback.from_user.id)["is_passed"]:
-        msg = await bot.send_photo_if_exist(
-            chat_id=callback.from_user.id,
-            caption=URLInputFile(IMG),
-            text="Вы уже проходили опрос",
-            reply_markup=user_keyboard_main,
-        )
-        set_msg_id(callback.from_user.id, msg.message_id)
-
-        return
-
     await state.set_state(Survey.quizId)
     quiz = get_next_quiz()
 

@@ -50,6 +50,17 @@ async def user_handler_quiz(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
 
+    if get_by_tg_id(message.from_user.id)["is_passed"]:
+        msg = await bot.send_photo_if_exist(
+            chat_id=message.from_user.id,
+            caption=URLInputFile(IMG),
+            text="Вы уже проходили опрос",
+            reply_markup=user_keyboard_main,
+        )
+        set_msg_id(message.from_user.id, msg.message_id)
+        await bot.delete_message(message.from_user.id, message.message_id)
+        return
+
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
         caption=URLInputFile(IMG),

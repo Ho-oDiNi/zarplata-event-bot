@@ -15,11 +15,12 @@ def user_keyboard_builder_feedback():
 def user_keyboard_builder_speakers():
     builder = InlineKeyboardBuilder()
 
-    for speaker in get_event_speakers():
+    for speaker in get_event_speakers(get_current_event()["id"]):
         builder.button(
             text=f"{speaker['name']}",
             callback_data=f"ask_speaker?id={speaker['id']}",
         )
+    builder.button(text="Назад ⬅️", callback_data=f"none")
 
     builder.adjust(2)
     return builder.as_markup(one_time_keyboard=True)
@@ -40,6 +41,7 @@ def user_keyboard_builder_variants(quiz_id):
 user_keyboard_survey_start = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Поехали 🚀", callback_data="survey_start")],
+        [InlineKeyboardButton(text="Назад ⬅️", callback_data="none")],
     ]
 )
 
