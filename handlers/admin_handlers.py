@@ -2,41 +2,19 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 from keyboards.admin_reply_keyboards import *
+from keyboards.admin_inline_keyboards import *
 from filters.admin_filter import IsAdminFilter
+from aiogram.fsm.context import FSMContext
+from utils.states import *
 
 router = Router()
 router.message.filter(IsAdminFilter())
 
 
-@router.message(F.text.lower().in_({"назад", "меню"}))
+@router.message(F.text.lower().in_({"в главное меню", "меню"}))
 @router.message(Command("menu", "start"))
-async def admin_handler_menu(message: Message):
+async def admin_handler_menu(message: Message, state: FSMContext):
     await message.answer(text=f"Выберите действие:", reply_markup=admin_keyboard_main)
-
-
-@router.message(F.text.lower() == "настройки конференции")
-async def admin_handler_setting(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_settings)
-
-
-@router.message(F.text.lower() == "изменить название")
-async def admin_handler_change_title(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
-
-
-@router.message(F.text.lower() == "ввести опрос")
-async def admin_handler_change_quiz(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
-
-
-@router.message(F.text.lower() == "ввести данные о спикерах")
-async def admin_handler_change_speakers(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
-
-
-@router.message(F.text.lower() == "отправить рассылку")
-async def admin_handler_send_mailing(message: Message):
-    await message.answer(text=f"В РАЗРАБОТКЕ", reply_markup=admin_keyboard_in_develop)
 
 
 @router.message()

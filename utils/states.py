@@ -8,3 +8,7 @@ class User(StatesGroup):
 
 class Survey(StatesGroup):
     quizId = State()
+
+
+class Admin(StatesGroup):
+    eventId = State()

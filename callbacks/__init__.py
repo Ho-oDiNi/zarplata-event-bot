@@ -1,1 +1,1 @@
-from . import user_callbacks
+from . import user_callbacks, admin_callbacks

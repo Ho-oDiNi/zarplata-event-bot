@@ -30,6 +30,7 @@ async def main():
 
     dp.include_routers(
         admin_handlers.router,
+        admin_callbacks.router,
         user_handlers.router,
         user_callbacks.router,
     )

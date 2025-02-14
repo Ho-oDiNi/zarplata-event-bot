@@ -1,21 +1,6 @@
 from config.bot_config import DB
 
 
-def get_table(table):
-    cursor = DB.cursor(dictionary=True)
-    cursor.execute(
-        f"""
-        SELECT *
-        FROM `speakers` 
-        WHERE `event_id` = {get_current_event()['id']}
-        """
-    )
-    data = cursor.fetchall()
-    cursor.close()
-
-    return data
-
-
 def set_user(tg_id):
     cursor = DB.cursor()
     query = f"""
@@ -30,13 +15,13 @@ def set_user(tg_id):
     cursor.close()
 
 
-def get_event_speakers():
+def get_event_speakers(event_id):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
         f"""
         SELECT *
         FROM `speakers` 
-        WHERE `event_id` = {get_current_event()['id']}
+        WHERE `event_id` = {event_id}
         """
     )
     data = cursor.fetchall()
@@ -107,6 +92,21 @@ def get_next_quiz(current_id=None):
     return data
 
 
+def get_event_quizes(id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `quizes` 
+        WHERE `event_id` = {id}
+        """
+    )
+    data = cursor.fetchall()
+    cursor.close()
+
+    return data
+
+
 def get_quiz_variants(id):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
@@ -122,25 +122,25 @@ def get_quiz_variants(id):
     return data
 
 
-def increment_variant(id):
-    result = get_by_id("variants", id)["result"]
-    update_by_id("variants", "result", id, result + 1)
-
-
-def get_current_variants():
+def get_nearest_events():
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
-        f"""
-        SELECT *
-        FROM variants
-        JOIN quizes ON variants.quiz_id = quizes.id
-        WHERE quizes.event_id = {get_current_event()['id']}
+        """
+        SELECT * 
+        FROM `events` 
+        WHERE `date` BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE() + INTERVAL 30 DAY
+        ORDER BY `date` ASC
         """
     )
     data = cursor.fetchall()
     cursor.close()
 
     return data
+
+
+def increment_variant(id):
+    result = get_by_id("variants", id)["result"]
+    update_by_id("variants", "result", id, result + 1)
 
 
 def get_by_tg_id(tg_id):
