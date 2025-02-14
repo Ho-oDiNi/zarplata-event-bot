@@ -17,13 +17,15 @@ router.message.filter((HasEventFilter()))
 async def user_handler_menu(message: Message, bot: Bot):
     set_user(message.from_user.id)
     await message.answer(
-        text=f"Привет, {message.from_user.first_name}, рады видеть на конференции {get_current_event()['name']}",
+        text=f"Привет, {message.from_user.first_name}, рады видеть на {get_current_event()['name']}",
         reply_markup=user_keyboard_main,
     )
     await user_handler_info(message, bot)
 
 
-@router.message(F.text.lower().in_({"назад", "меню", "о конференции"}))
+@router.message(
+    F.text.lower().in_({"назад ⬅️", "об ивенте 📢", "назад", "об ивенте", "меню"})
+)
 @router.message(Command("menu"))
 async def user_handler_info(message: Message, bot: Bot):
     try:
@@ -43,7 +45,7 @@ async def user_handler_info(message: Message, bot: Bot):
     set_msg_id(message.from_user.id, msg.message_id)
 
 
-@router.message(F.text.lower() == "пройти опрос")
+@router.message(F.text.lower().in_({"пройти опрос 📊", "пройти опрос"}))
 async def user_handler_quiz(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
@@ -59,7 +61,7 @@ async def user_handler_quiz(message: Message, bot: Bot):
     set_msg_id(message.from_user.id, msg.message_id)
 
 
-@router.message(F.text.lower() == "задать вопрос")
+@router.message(F.text.lower().in_({"задать вопрос 💬", "задать вопрос"}))
 async def user_handler_question(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
@@ -75,7 +77,7 @@ async def user_handler_question(message: Message, bot: Bot):
     set_msg_id(message.from_user.id, msg.message_id)
 
 
-@router.message(F.text.lower() == "спикеру")
+@router.message(F.text.lower().in_({"спикеру 👔", "спикеру"}))
 async def user_handler_ask_speaker(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
@@ -91,7 +93,7 @@ async def user_handler_ask_speaker(message: Message, bot: Bot):
     set_msg_id(message.from_user.id, msg.message_id)
 
 
-@router.message(F.text.lower() == "администрации")
+@router.message(F.text.lower().in_({"администрации 🎩", "администрации"}))
 async def user_handler_ask_management(message: Message, bot: Bot):
     await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     await bot.send_chat_action(message.from_user.id, action="typing")
