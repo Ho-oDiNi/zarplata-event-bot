@@ -3,7 +3,6 @@ from aiogram.types import Message
 from utils.db_requests import *
 
 
-# Кэшируется запрос к БД?
 class HasEventFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         if get_current_event() == None:

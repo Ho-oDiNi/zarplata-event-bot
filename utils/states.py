@@ -17,3 +17,4 @@ class Admin(StatesGroup):
 
     massMailing = State()
     changeField = State()
+    deleteRow = State()

@@ -14,7 +14,7 @@ router.message.filter(IsAdminFilter())
 @router.message(F.text.lower().in_({"в главное меню", "меню"}))
 @router.message(Command("menu", "start"))
 async def admin_handler_menu(message: Message):
-    await message.answer(text=f"Выберите действие:", reply_markup=admin_keyboard_main)
+    await message.answer(text=f"Выберите действие:", reply_markup=admin_keyboard_main())
 
 
 @router.message(Admin.massMailing)

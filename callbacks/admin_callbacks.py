@@ -23,10 +23,14 @@ async def change_event(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data.startswith("current_event"))
 async def on_current_event(callback: CallbackQuery, bot: Bot):
-    event = get_by_id(
-        "events",
-        callback.data.partition("id=")[2],
-    )
+    event_id = callback.data.partition("id=")[2]
+    if event_id == "None":
+        await bot.send_message(
+            chat_id=callback.from_user.id, text=f"Сейчас нет активных Ивентов"
+        )
+        return
+
+    event = get_by_id("events", event_id)
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=f"Выбрана конференция {event["name"]}",
@@ -35,7 +39,7 @@ async def on_current_event(callback: CallbackQuery, bot: Bot):
 
 
 @router.callback_query(F.data.startswith("current_quiz"))
-async def on_current_event(callback: CallbackQuery, bot: Bot):
+async def on_current_quiz(callback: CallbackQuery, bot: Bot):
     quiz = get_by_id(
         "quizes",
         callback.data.partition("id=")[2],
@@ -47,8 +51,21 @@ async def on_current_event(callback: CallbackQuery, bot: Bot):
     )
 
 
+@router.callback_query(F.data.startswith("current_variant"))
+async def on_current_variant(callback: CallbackQuery, bot: Bot):
+    variant = get_by_id(
+        "variants",
+        callback.data.partition("id=")[2],
+    )
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Выбран опрос {variant["name"]}",
+        reply_markup=admin_keyboard_setting_variant(variant["id"], variant["quiz_id"]),
+    )
+
+
 @router.callback_query(F.data.startswith("current_speaker"))
-async def on_current_event(callback: CallbackQuery, bot: Bot):
+async def on_current_speaker(callback: CallbackQuery, bot: Bot):
     speaker = get_by_id(
         "speakers",
         callback.data.partition("id=")[2],
@@ -74,7 +91,7 @@ async def setting_event(callback: CallbackQuery, bot: Bot):
 
 
 @router.callback_query(F.data.startswith("setting_survey"))
-async def test(callback: CallbackQuery, bot: Bot):
+async def setting_survey(callback: CallbackQuery, bot: Bot):
     event = get_by_id(
         "events",
         callback.data.partition("id=")[2],
@@ -87,7 +104,7 @@ async def test(callback: CallbackQuery, bot: Bot):
 
 
 @router.callback_query(F.data.startswith("setting_speaker"))
-async def test(callback: CallbackQuery, bot: Bot):
+async def setting_speaker(callback: CallbackQuery, bot: Bot):
     event = get_by_id(
         "events",
         callback.data.partition("id=")[2],
@@ -96,6 +113,19 @@ async def test(callback: CallbackQuery, bot: Bot):
         chat_id=callback.from_user.id,
         text=f"Выбирите спикера для {event["name"]}",
         reply_markup=admin_keyboard_builder_speakers(event["id"]),
+    )
+
+
+@router.callback_query(F.data.startswith("setting_variants"))
+async def setting_variants(callback: CallbackQuery, bot: Bot):
+    quiz = get_by_id(
+        "quizes",
+        callback.data.partition("id=")[2],
+    )
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Выбирите варинт ответов для {quiz["name"]}",
+        reply_markup=admin_keyboard_builder_variants(quiz["id"]),
     )
 
 
@@ -152,6 +182,35 @@ async def prepare_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
     )
 
 
+@router.callback_query(F.data.startswith("pre_delete_row"))
+async def pre_delete_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    callback_table, _, callback_id = parse_callback_data(callback.data)
+
+    await state.update_data(requestTable=callback_table)
+    await state.update_data(requestId=callback_id)
+
+    data = get_by_id(callback_table, callback_id)
+
+    await state.set_state(Admin.deleteRow)
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Вы уверены, что хотите удалить {data["name"]}?",
+        reply_markup=admin_keyboard_confirm("delete_row"),
+    )
+
+
+@router.callback_query(F.data.startswith("delete_row"))
+async def delete_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    adminState = await state.get_data()
+    delete_by_id(adminState["requestTable"], adminState["requestId"])
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Успешно удалено",
+        reply_markup=admin_keyboard_main(),
+    )
+    await state.clear()
+
+
 @router.callback_query(F.data == "change_field")
 async def change_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
     adminState = await state.get_data()
@@ -166,7 +225,7 @@ async def change_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=f"Успешно изменено",
-        reply_markup=admin_keyboard_main,
+        reply_markup=admin_keyboard_main(),
     )
     await state.clear()
 
@@ -176,7 +235,7 @@ async def move_to_menu(callback: CallbackQuery, bot: Bot):
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=f"Выберете действие:",
-        reply_markup=admin_keyboard_main,
+        reply_markup=admin_keyboard_main(),
     )
 
 
@@ -185,7 +244,7 @@ async def cancel(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=f"Действие отменено",
-        reply_markup=admin_keyboard_main,
+        reply_markup=admin_keyboard_main(),
     )
 
     await state.clear()

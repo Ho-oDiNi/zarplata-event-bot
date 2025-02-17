@@ -88,6 +88,18 @@ def update_by_id(table, field, id, value):
     DB.commit()
 
 
+def delete_by_id(table, id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        DELETE FROM  `{table}`
+        WHERE `id` = {id}
+        """
+    )
+    cursor.close()
+    DB.commit()
+
+
 def get_next_quiz(current_id=None):
     cursor = DB.cursor(dictionary=True)
     query = f"""
