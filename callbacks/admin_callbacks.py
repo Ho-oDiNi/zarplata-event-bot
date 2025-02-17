@@ -164,8 +164,8 @@ async def send_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext):
             await state.clear()
 
 
-@router.callback_query(F.data.startswith("prepare_field"))
-async def prepare_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
+@router.callback_query(F.data.startswith("pre_change_row"))
+async def pre_change_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     callback_table, callback_field, callback_id = parse_callback_data(callback.data)
 
     await state.update_data(requestTable=callback_table)
@@ -174,7 +174,7 @@ async def prepare_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
 
     data = get_by_id(callback_table, callback_id)
 
-    await state.set_state(Admin.changeField)
+    await state.set_state(Admin.changeRow)
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=f"Введите новое значение {callback_field} для {data["name"]}",
@@ -211,15 +211,59 @@ async def delete_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await state.clear()
 
 
-@router.callback_query(F.data == "change_field")
-async def change_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
+@router.callback_query(F.data.startswith("pre_create_row"))
+async def pre_create_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    callback_table, callback_field, callback_id = parse_callback_data(callback.data)
+
+    await state.update_data(requestTable=callback_table)
+    await state.update_data(requestField=callback_field)
+    await state.update_data(requestId=callback_id)
+    await state.set_state(Admin.createRow)
+
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Введите название для поля",
+        reply_markup=admin_keyboard_cancel,
+    )
+
+
+@router.callback_query(F.data.startswith("create_row"))
+async def create_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    adminState = await state.get_data()
+
+    row_id = insert_row(
+        adminState["requestTable"],
+        adminState["requestField"],
+        adminState["createRow"],
+    )
+
+    FK_field = parse_FK_field(adminState["requestTable"])
+
+    if FK_field:
+        update_by_id(
+            adminState["requestTable"],
+            FK_field,
+            row_id,
+            adminState["requestId"],
+        )
+
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Успешно создано",
+        reply_markup=admin_keyboard_main(),
+    )
+    await state.clear()
+
+
+@router.callback_query(F.data == "change_row")
+async def change_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     adminState = await state.get_data()
 
     update_by_id(
         adminState["requestTable"],
         adminState["requestField"],
         adminState["requestId"],
-        adminState["changeField"],
+        adminState["changeRow"],
     )
 
     await bot.send_message(
@@ -234,7 +278,7 @@ async def change_field(callback: CallbackQuery, bot: Bot, state: FSMContext):
 async def move_to_menu(callback: CallbackQuery, bot: Bot):
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выберете действие:",
+        text=f"Меню ивентов",
         reply_markup=admin_keyboard_main(),
     )
 

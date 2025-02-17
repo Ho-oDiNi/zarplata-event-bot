@@ -16,5 +16,7 @@ class Admin(StatesGroup):
     requestTable = State()
 
     massMailing = State()
-    changeField = State()
+
+    createRow = State()
+    changeRow = State()
     deleteRow = State()

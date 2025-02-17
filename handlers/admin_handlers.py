@@ -31,17 +31,30 @@ async def admin_handler_mailing(message: Message, state: FSMContext, bot: Bot):
     )
 
 
-@router.message(Admin.changeField)
-async def admin_handler_mailing(message: Message, state: FSMContext, bot: Bot):
+@router.message(Admin.changeRow)
+async def admin_handler_changing(message: Message, state: FSMContext, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
-    await state.update_data(changeField=message.text)
+    await state.update_data(changeRow=message.text)
 
     adminState = await state.get_data()
     data = get_by_id(adminState["requestTable"], adminState["requestId"])
     await bot.send_message(
         chat_id=message.from_user.id,
         text=f"Подтвердите изменение c {data[adminState["requestField"]]} на {message.text}",
-        reply_markup=admin_keyboard_confirm("change_field"),
+        reply_markup=admin_keyboard_confirm("change_row"),
+    )
+
+
+@router.message(Admin.createRow)
+async def admin_handler_creating(message: Message, state: FSMContext, bot: Bot):
+    await bot.send_chat_action(message.from_user.id, action="typing")
+    await state.update_data(createRow=message.text)
+
+    adminState = await state.get_data()
+    await bot.send_message(
+        chat_id=message.from_user.id,
+        text=f"Подтвердите создание поля {adminState["requestTable"]} с названием {message.text}",
+        reply_markup=admin_keyboard_confirm("create_row"),
     )
 
 

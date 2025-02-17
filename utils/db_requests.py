@@ -51,7 +51,8 @@ def get_current_event():
         """
         SELECT * 
         FROM `events` 
-        WHERE `date` BETWEEN CURDATE() - INTERVAL 1 DAY AND CURDATE() + INTERVAL 2 DAY;
+        WHERE `date` BETWEEN CURDATE() - INTERVAL 1 DAY AND CURDATE() + INTERVAL 2 DAY
+        LIMIT 1
         """
     )
     data = cursor.fetchone()
@@ -98,6 +99,20 @@ def delete_by_id(table, id):
     )
     cursor.close()
     DB.commit()
+
+
+def insert_row(table, field, value):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        INSERT INTO {table} (`{field}`) VALUES ('{value}')
+        """
+    )
+    id = cursor.lastrowid
+    cursor.close()
+    DB.commit()
+
+    return id
 
 
 def get_next_quiz(current_id=None):
@@ -155,7 +170,8 @@ def get_nearest_events():
         """
         SELECT * 
         FROM `events` 
-        WHERE `date` BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE() + INTERVAL 30 DAY
+        WHERE (`date` BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE() + INTERVAL 30 DAY)
+        OR `date` IS NULL
         ORDER BY `date` ASC
         """
     )
