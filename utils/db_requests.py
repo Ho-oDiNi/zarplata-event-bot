@@ -30,6 +30,21 @@ def get_event_speakers(event_id):
     return data
 
 
+def get_event_users(event_id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `users` 
+        WHERE `event_id` = {event_id}
+        """
+    )
+    data = cursor.fetchall()
+    cursor.close()
+
+    return data
+
+
 def get_current_event():
     cursor = DB.cursor(dictionary=True)
     cursor.execute(

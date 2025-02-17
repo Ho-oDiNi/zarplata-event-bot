@@ -11,4 +11,9 @@ class Survey(StatesGroup):
 
 
 class Admin(StatesGroup):
-    eventId = State()
+    requestId = State()
+    requestField = State()
+    requestTable = State()
+
+    massMailing = State()
+    changeField = State()
