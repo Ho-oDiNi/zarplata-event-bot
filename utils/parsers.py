@@ -1,3 +1,7 @@
+def step_letter(letter: str, index: int):
+    return chr(ord(letter) + index)
+
+
 def parse_callback_data(callback_data):
     callback_data = callback_data.partition("?")[2]
 
@@ -38,5 +42,24 @@ def parse_FK_field(table):
         return "event_id"
     if table == "variants":
         return "quiz_id"
-    if table == "events":
-        return None
+
+    return None
+
+
+def parse_next_cell(table, data):
+    print(data)
+    if data == None:
+        if table == "quizes":
+            return "A1"
+        if table == "speakers":
+            return "B1"
+        if table == "variants":
+            return "B2"
+    else:
+        cell = data["cell"]
+        if table == "quizes":
+            return f"{step_letter(cell[:1], 2)}1"
+        if table == "speakers":
+            return f"{step_letter(cell[:1], 1)}1"
+        if table == "variants":
+            return cell[:1] + str(int(cell[1:]) + 1)

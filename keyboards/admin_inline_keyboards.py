@@ -247,6 +247,21 @@ def admin_keyboard_setting_speaker(speaker_id, event_id):
     return builder.as_markup()
 
 
+# def admin_keyboard_copy_quiz():
+#     builder = InlineKeyboardBuilder()
+#     nearest_events = get_nearest_events()
+#     for event in nearest_events:
+#         builder.button(
+#             text=f"{event['name']}",
+#             callback_data=f"copy_quiz?id={event['id']}",
+#         )
+
+#     builder.button(text="В меню", callback_data="menu")
+
+#     builder.adjust(*parse_button(middle=len(nearest_events), end=1))
+#     return builder.as_markup(one_time_keyboard=True)
+
+
 admin_keyboard_in_develop = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="Назад")]],
 )

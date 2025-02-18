@@ -101,6 +101,20 @@ def delete_by_id(table, id):
     DB.commit()
 
 
+# def copy_quiz_by_id(current_event_id, copyed_event_id):
+#     cursor = DB.cursor(dictionary=True)
+#     cursor.execute(
+#         f"""
+#         INSERT INTO `quizes` (`name`, `content`, `img`, `event_id`)
+#         SELECT `name`, `content`, `img`, {current_event_id}
+#         FROM `quizes`
+#         WHERE `event_id` = 100;
+#         """
+#     )
+#     cursor.close()
+#     DB.commit()
+
+
 def insert_row(table, field, value):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
@@ -211,3 +225,16 @@ def get_msg_id(tg_id):
 
 def set_msg_id(tg_id, msg_id):
     update_by_id("users", "msg_id", get_by_tg_id(tg_id)["id"], msg_id)
+
+
+def get_max_cell(table, FK_field, FK_value):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT MAX(`cell`) as cell FROM `{table}` WHERE `{FK_field}` = {FK_value} LIMIT 1
+        """
+    )
+    data = cursor.fetchone()
+    cursor.close()
+
+    return data

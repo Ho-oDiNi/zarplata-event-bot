@@ -238,13 +238,25 @@ async def create_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     )
 
     FK_field = parse_FK_field(adminState["requestTable"])
-
     if FK_field:
         update_by_id(
             adminState["requestTable"],
             FK_field,
             row_id,
             adminState["requestId"],
+        )
+
+        data = get_max_cell(
+            adminState["requestTable"],
+            FK_field,
+            adminState["requestId"],
+        )
+        next_cell = parse_next_cell(adminState["requestTable"], data)
+        update_by_id(
+            adminState["requestTable"],
+            "cell",
+            row_id,
+            next_cell,
         )
 
     await bot.send_message(
@@ -272,6 +284,26 @@ async def change_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
         reply_markup=admin_keyboard_main(),
     )
     await state.clear()
+
+
+# @router.callback_query(F.data.startswith("copy_quiz"))
+# async def copy_quiz(callback: CallbackQuery, bot: Bot, state: FSMContext):
+#     adminState = await state.get_data()
+
+#     copy_by_id(adminState["requestId"], callback.data.partition("id=")[2])
+#     update_by_id(
+#         adminState["requestTable"],
+#         adminState["requestField"],
+#         adminState["requestId"],
+#         adminState["changeRow"],
+#     )
+
+#     await bot.send_message(
+#         chat_id=callback.from_user.id,
+#         text=f"Успешно изменено",
+#         reply_markup=admin_keyboard_main(),
+#     )
+#     await state.clear()
 
 
 @router.callback_query(F.data == "menu")
