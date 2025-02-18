@@ -101,18 +101,69 @@ def delete_by_id(table, id):
     DB.commit()
 
 
-# def copy_quiz_by_id(current_event_id, copyed_event_id):
-#     cursor = DB.cursor(dictionary=True)
-#     cursor.execute(
-#         f"""
-#         INSERT INTO `quizes` (`name`, `content`, `img`, `event_id`)
-#         SELECT `name`, `content`, `img`, {current_event_id}
-#         FROM `quizes`
-#         WHERE `event_id` = 100;
-#         """
-#     )
-#     cursor.close()
-#     DB.commit()
+def copy_quiz_by_id(current_event_id, copyed_event_id):
+    cursor = DB.cursor()
+    cursor.execute(
+        f"""
+        -- Шаг 1: Копируем quizes
+        INSERT INTO `quizes` (`name`, `content`, `cell`, `img`, `event_id`)
+        SELECT `name`, `content`, `cell`, `img`, {current_event_id}
+        FROM `quizes`
+        WHERE `event_id` = {copyed_event_id};
+        """
+    )
+    cursor.close()
+    DB.commit()
+
+    cursor = DB.cursor()
+    cursor.execute(
+        f"""
+        -- Шаг 2: Создаем временную таблицу для сопоставления quiz_id
+        CREATE TEMPORARY TABLE temp_quiz_mapping (
+            old_quiz_id INT,
+            new_quiz_id INT
+        );
+        """
+    )
+    cursor.close()
+    DB.commit()
+
+    cursor = DB.cursor()
+    cursor.execute(
+        f"""
+        -- Шаг 3: Заполняем временную таблицу соответствий
+        INSERT INTO temp_quiz_mapping (old_quiz_id, new_quiz_id)
+        SELECT q1.id AS old_quiz_id, q2.id AS new_quiz_id
+        FROM quizes q1
+        JOIN quizes q2 ON q1.name = q2.name
+        WHERE q1.event_id = {copyed_event_id} AND q2.event_id = {current_event_id};
+        """
+    )
+    cursor.close()
+    DB.commit()
+
+    cursor = DB.cursor()
+    cursor.execute(
+        f"""
+        -- Шаг 4: Копируем variants и привязываем их к новым quizes
+        INSERT INTO `variants` (`name`, `quiz_id`, `cell`)
+        SELECT v.name, tqm.new_quiz_id, v.cell
+        FROM `variants` v
+        JOIN temp_quiz_mapping tqm ON v.quiz_id = tqm.old_quiz_id;
+    """
+    )
+    cursor.close()
+    DB.commit()
+
+    cursor = DB.cursor()
+    cursor.execute(
+        f"""
+        -- Шаг 5: Удаляем временную таблицу
+        DROP TEMPORARY TABLE temp_quiz_mapping;
+        """
+    )
+    DB.commit()
+    cursor.close()
 
 
 def insert_row(table, field, value):

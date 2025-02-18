@@ -20,3 +20,5 @@ class Admin(StatesGroup):
     createRow = State()
     changeRow = State()
     deleteRow = State()
+
+    copyQuiz = State()

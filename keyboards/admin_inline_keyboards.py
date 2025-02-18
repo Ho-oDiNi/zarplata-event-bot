@@ -47,8 +47,8 @@ def admin_keyboard_builder_quizes(event_id):
         callback_data=f"pre_create_row?table=quizes&field=name&id={event_id}",
     )
     builder.button(
-        text="Копировать квиз",
-        callback_data=f"pre_copy_row?table=quizes&field=_&id={event_id}",
+        text="Копировать квизы",
+        callback_data=f"pre_copy_quiz?table=_&field=_&id={event_id}",
     )
 
     event_quizes = get_event_quizes(event_id)
@@ -247,19 +247,19 @@ def admin_keyboard_setting_speaker(speaker_id, event_id):
     return builder.as_markup()
 
 
-# def admin_keyboard_copy_quiz():
-#     builder = InlineKeyboardBuilder()
-#     nearest_events = get_nearest_events()
-#     for event in nearest_events:
-#         builder.button(
-#             text=f"{event['name']}",
-#             callback_data=f"copy_quiz?id={event['id']}",
-#         )
+def admin_keyboard_copy_quiz():
+    builder = InlineKeyboardBuilder()
+    nearest_events = get_nearest_events()
+    for event in nearest_events:
+        builder.button(
+            text=f"{event['name']}",
+            callback_data=f"copy_quiz?id={event['id']}",
+        )
 
-#     builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="menu")
 
-#     builder.adjust(*parse_button(middle=len(nearest_events), end=1))
-#     return builder.as_markup(one_time_keyboard=True)
+    builder.adjust(*parse_button(middle=len(nearest_events), end=1))
+    return builder.as_markup(one_time_keyboard=True)
 
 
 admin_keyboard_in_develop = InlineKeyboardMarkup(

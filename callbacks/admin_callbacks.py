@@ -283,24 +283,32 @@ async def change_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await state.clear()
 
 
-# @router.callback_query(F.data.startswith("copy_quiz"))
-# async def copy_quiz(callback: CallbackQuery, bot: Bot, state: FSMContext):
-#     adminState = await state.get_data()
+@router.callback_query(F.data.startswith("pre_copy_quiz"))
+async def pre_copy_quiz(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    _, _, callback_id = parse_callback_data(callback.data)
 
-#     copy_by_id(adminState["requestId"], callback.data.partition("id=")[2])
-#     update_by_id(
-#         adminState["requestTable"],
-#         adminState["requestField"],
-#         adminState["requestId"],
-#         adminState["changeRow"],
-#     )
+    await state.update_data(requestId=callback_id)
+    await state.set_state(Admin.copyQuiz)
 
-#     await bot.send_message(
-#         chat_id=callback.from_user.id,
-#         text=f"Успешно изменено",
-#         reply_markup=admin_keyboard_main(),
-#     )
-#     await state.clear()
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Выбирите ивент, с которого хотитие скопировать опрос",
+        reply_markup=admin_keyboard_copy_quiz(),
+    )
+
+
+@router.callback_query(F.data.startswith("copy_quiz"))
+async def copy_quiz(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    adminState = await state.get_data()
+
+    copy_quiz_by_id(adminState["requestId"], callback.data.partition("id=")[2])
+
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Успешно изменено",
+        reply_markup=admin_keyboard_main(),
+    )
+    await state.clear()
 
 
 @router.callback_query(F.data == "menu")
