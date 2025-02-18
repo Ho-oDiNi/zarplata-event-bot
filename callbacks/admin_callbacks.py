@@ -246,12 +246,9 @@ async def create_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
             adminState["requestId"],
         )
 
-        data = get_max_cell(
-            adminState["requestTable"],
-            FK_field,
-            adminState["requestId"],
+        next_cell = parse_next_cell(
+            adminState["requestTable"], FK_field, adminState["requestId"]
         )
-        next_cell = parse_next_cell(adminState["requestTable"], data)
         update_by_id(
             adminState["requestTable"],
             "cell",

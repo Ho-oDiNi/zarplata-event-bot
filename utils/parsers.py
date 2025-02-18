@@ -1,3 +1,6 @@
+from utils.db_requests import *
+
+
 def step_letter(letter: str, index: int):
     return chr(ord(letter) + index)
 
@@ -46,16 +49,13 @@ def parse_FK_field(table):
     return None
 
 
-def parse_next_cell(table, data):
-    print(data)
-    if data == None:
-        if table == "quizes":
-            return "A1"
-        if table == "speakers":
-            return "B1"
-        if table == "variants":
-            return "B2"
-    else:
+def parse_next_cell(table, FK_field, FK_id):
+    data = get_max_cell(
+        table,
+        FK_field,
+        FK_id,
+    )
+    try:
         cell = data["cell"]
         if table == "quizes":
             return f"{step_letter(cell[:1], 2)}1"
@@ -63,3 +63,11 @@ def parse_next_cell(table, data):
             return f"{step_letter(cell[:1], 1)}1"
         if table == "variants":
             return cell[:1] + str(int(cell[1:]) + 1)
+    except:
+        if table == "quizes":
+            return "A1"
+        if table == "speakers":
+            return "B1"
+        if table == "variants":
+            cell = get_by_id("quizes", FK_id)["cell"]
+            return f"{cell[:1]}2"
