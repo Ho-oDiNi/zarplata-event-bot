@@ -4,15 +4,15 @@ from utils.parsers import *
 
 
 def admin_keyboard_main():
-    try:
-        event_id = get_current_event()["id"]
-    except:
-        event_id = None
+    current_event = get_current_event()
+    if current_event is not None:
+        current_event_id = current_event["id"]
+    else:
+        current_event_id = None
 
     builder = InlineKeyboardBuilder()
-
     builder.button(
-        text="К текущему Ивенту", callback_data=f"current_event?id={event_id}"
+        text="К текущему Ивенту", callback_data=f"current_event?id={current_event_id}"
     )
     builder.button(text="Выбрать Ивент", callback_data="change_event")
     builder.button(
@@ -20,17 +20,26 @@ def admin_keyboard_main():
         callback_data="pre_create_row?table=events&field=name&id=_",
     )
 
-    builder.adjust(*parse_button(start=1, end=2))
+    builder.button(
+        text="Отправить рассылку",
+        callback_data=f"pre_mass_mailing",
+    )
+    builder.button(
+        text="Переключить гугл таблицу",
+        callback_data=f"pre_change_table",
+    )
+
+    builder.adjust(1, 2, 2)
     return builder.as_markup(one_time_keyboard=True)
 
 
-def admin_keyboard_builder_events():
+def admin_keyboard_builder_events(callback):
     builder = InlineKeyboardBuilder()
     nearest_events = get_nearest_events()
     for event in nearest_events:
         builder.button(
             text=f"{event['name']}",
-            callback_data=f"current_event?id={event['id']}",
+            callback_data=f"{callback}?id={event['id']}",
         )
 
     builder.button(text="В меню", callback_data="menu")
@@ -109,6 +118,7 @@ def admin_keyboard_builder_speakers(event_id):
 
 def admin_keyboard_setting(event_id):
     builder = InlineKeyboardBuilder()
+
     builder.button(
         text="Настройки ивента",
         callback_data=f"setting_event?id={event_id}",
@@ -121,19 +131,10 @@ def admin_keyboard_setting(event_id):
         text="Настройки спикеров",
         callback_data=f"setting_speaker?id={event_id}",
     )
-    builder.button(
-        text="Переключить таблицу",
-        callback_data=f"in_develop",
-        # callback_data=f"change_table?id={event_id}",
-    )
-    builder.button(
-        text="Отправить рассылку",
-        callback_data=f"prepare_mailing?id={event_id}",
-    )
     builder.button(text="В меню", callback_data="menu")
     builder.button(text="Назад", callback_data="change_event")
 
-    builder.adjust(3, 2, 2)
+    builder.adjust(1, 2, 2)
     return builder.as_markup()
 
 
@@ -174,6 +175,7 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
     builder.button(
         text="Настройки ответов", callback_data=f"setting_variants?id={quiz_id}"
     )
+
     builder.button(
         text="Изменить название",
         callback_data=f"pre_change_row?table=quizes&field=name&id={quiz_id}",
@@ -186,6 +188,7 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
         text="Сменить фото",
         callback_data=f"pre_change_row?table=quizes&field=img&id={quiz_id}",
     )
+
     builder.button(
         text="Удалить Квиз",
         callback_data=f"pre_delete_row?table=quizes&field=_&id={event_id}",
@@ -194,7 +197,7 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
     builder.button(text="В меню", callback_data="menu")
     builder.button(text="Назад", callback_data=f"setting_survey?id={event_id}")
 
-    builder.adjust(2, 2, 1, 2)
+    builder.adjust(1, 3, 1, 2)
     return builder.as_markup()
 
 
@@ -217,7 +220,7 @@ def admin_keyboard_setting_variant(variant_id, quiz_id):
     builder.button(text="В меню", callback_data="menu")
     builder.button(text=f"Назад", callback_data=f"current_quiz?id={quiz_id}")
 
-    builder.adjust(1, 2, 2)
+    builder.adjust(2, 1, 2)
     return builder.as_markup()
 
 
@@ -245,21 +248,6 @@ def admin_keyboard_setting_speaker(speaker_id, event_id):
 
     builder.adjust(3, 1, 2)
     return builder.as_markup()
-
-
-def admin_keyboard_copy_quiz():
-    builder = InlineKeyboardBuilder()
-    nearest_events = get_nearest_events()
-    for event in nearest_events:
-        builder.button(
-            text=f"{event['name']}",
-            callback_data=f"copy_quiz?id={event['id']}",
-        )
-
-    builder.button(text="В меню", callback_data="menu")
-
-    builder.adjust(*parse_button(middle=len(nearest_events), end=1))
-    return builder.as_markup(one_time_keyboard=True)
 
 
 admin_keyboard_in_develop = InlineKeyboardMarkup(

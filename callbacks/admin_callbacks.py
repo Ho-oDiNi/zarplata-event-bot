@@ -16,8 +16,56 @@ router.message.filter(IsAdminFilter())
 async def change_event(callback: CallbackQuery, bot: Bot):
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Ивенты за два месяца",
-        reply_markup=admin_keyboard_builder_events(),
+        text=f"Выбирите ивент",
+        reply_markup=admin_keyboard_builder_events("current_event"),
+    )
+
+
+@router.callback_query(F.data == "pre_mass_mailing")
+async def pre_mass_mailing(callback: CallbackQuery, bot: Bot):
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Выбирите ивент для рассылки",
+        reply_markup=admin_keyboard_builder_events("prepare_mailing"),
+    )
+
+
+@router.callback_query(F.data == "pre_change_table")
+async def pre_change_table(callback: CallbackQuery, bot: Bot):
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Выбирите ивент для отображения",
+        reply_markup=admin_keyboard_builder_events("prepare_change_table"),
+    )
+
+
+@router.callback_query(F.data.startswith("prepare_change_table"))
+async def pre_change_table(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    event = get_by_id(
+        "events",
+        callback.data.partition("id=")[2],
+    )
+    await state.update_data(requestId=event["id"])
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Вы уверены, что хотите сменить таблицу?\n\nВНИМАНИЕ!\n\nПроцессс занимает МНОГО времени,\nа ВСЕ вопросы спикерам будут БЕЗВОЗРАТНО удалены",
+        reply_markup=admin_keyboard_confirm("change_table"),
+    )
+
+
+@router.callback_query(F.data == "change_table")
+async def pre_change_table(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Дождитесь окончания процесса!",
+    )
+
+    adminState = await state.get_data()
+
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Успешно завершено",
+        reply_markup=admin_keyboard_main(),
     )
 
 
@@ -156,12 +204,13 @@ async def send_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext):
             )
         except:
             print(f"Чат {user["tg_id"]} не доступен")
-        finally:
-            await bot.send_message(
-                chat_id=callback.from_user.id,
-                text=f"Успешно доставлено",
-            )
-            await state.clear()
+
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Успешно доставлено",
+        reply_markup=admin_keyboard_main(),
+    )
+    await state.clear()
 
 
 @router.callback_query(F.data.startswith("pre_change_row"))
@@ -293,7 +342,7 @@ async def pre_copy_quiz(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=f"Выбирите ивент, с которого хотитие скопировать опрос",
-        reply_markup=admin_keyboard_copy_quiz(),
+        reply_markup=admin_keyboard_builder_events("copy_quiz"),
     )
 
 
