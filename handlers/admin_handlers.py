@@ -40,7 +40,7 @@ async def admin_handler_changing(message: Message, state: FSMContext, bot: Bot):
     data = get_by_id(adminState["requestTable"], adminState["requestId"])
     await bot.send_message(
         chat_id=message.from_user.id,
-        text=f"Подтвердите изменение c {data[adminState["requestField"]]} на {message.text}",
+        text=f"Подтвердите изменение c {data[adminState["requestField"]]}\n{message.text}",
         reply_markup=admin_keyboard_confirm("change_row"),
     )
 
@@ -53,7 +53,7 @@ async def admin_handler_creating(message: Message, state: FSMContext, bot: Bot):
     adminState = await state.get_data()
     await bot.send_message(
         chat_id=message.from_user.id,
-        text=f"Подтвердите создание поля {adminState["requestTable"]} с названием {message.text}",
+        text=f"Подтвердите создание поля {adminState["requestTable"]}\n{message.text}",
         reply_markup=admin_keyboard_confirm("create_row"),
     )
 

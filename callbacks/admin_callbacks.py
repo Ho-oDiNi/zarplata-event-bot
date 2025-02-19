@@ -308,8 +308,10 @@ async def create_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
 
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Успешно создано",
-        reply_markup=admin_keyboard_main(),
+        text=f"Успешно создано, хотите создать еще?",
+        reply_markup=admin_keyboard_confirm(
+            f"pre_create_row?table={adminState["requestTable"]}&field={adminState["requestField"]}&id={adminState["requestId"]}"
+        ),
     )
     await state.clear()
 
