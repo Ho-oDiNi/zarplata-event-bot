@@ -29,10 +29,11 @@ def user_keyboard_builder_speakers():
 def user_keyboard_builder_variants(quiz_id):
     builder = InlineKeyboardBuilder()
 
-    for variant in get_quiz_variants(quiz_id):
+    quiz_variants = get_quiz_variants(quiz_id)
+    for i in range(0, len(quiz_variants)):
         builder.button(
-            text=f"{variant['name']}",
-            callback_data=f"survey_answer?id={variant['id']}",
+            text=f"{i+1}",
+            callback_data=f"survey_answer?id={quiz_variants[i]['id']}",
         )
 
     return builder.as_markup()
