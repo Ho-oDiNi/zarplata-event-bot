@@ -5,6 +5,10 @@ def step_letter(letter: str, index: int):
     return chr(ord(letter) + index)
 
 
+def step_number(number: str, step: int):
+    return str(int(number) + step)
+
+
 def parse_callback_data(callback_data):
     callback_data = callback_data.partition("?")[2]
 
@@ -62,7 +66,7 @@ def parse_next_cell(table, FK_field, FK_id):
         if table == "speakers":
             return f"{step_letter(cell[:1], 1)}1"
         if table == "variants":
-            return cell[:1] + str(int(cell[1:]) + 1)
+            return f"{cell[:1]}{step_number(cell[1:], 1)}"
     except:
         if table == "quizes":
             return "A1"
@@ -70,4 +74,4 @@ def parse_next_cell(table, FK_field, FK_id):
             return "B1"
         if table == "variants":
             cell = get_by_id("quizes", FK_id)["cell"]
-            return f"{cell[:1]}2"
+            return f"{step_letter(cell[:1], 1)}2"

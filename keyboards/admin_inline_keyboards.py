@@ -42,7 +42,7 @@ def admin_keyboard_builder_events(callback):
             callback_data=f"{callback}?id={event['id']}",
         )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
 
     builder.adjust(*parse_button(middle=len(nearest_events), end=1))
     return builder.as_markup(one_time_keyboard=True)
@@ -67,7 +67,7 @@ def admin_keyboard_builder_quizes(event_id):
             callback_data=f"current_quiz?id={quiz['id']}",
         )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_event?id={event_id}")
 
     builder.adjust(*parse_button(start=2, middle=len(event_quizes), end=2))
@@ -88,7 +88,7 @@ def admin_keyboard_builder_variants(quiz_id):
             callback_data=f"current_variant?id={variant['id']}",
         )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_quiz?id={quiz_id}")
 
     builder.adjust(*parse_button(start=1, middle=len(quiz_variants), end=2))
@@ -109,7 +109,7 @@ def admin_keyboard_builder_speakers(event_id):
             callback_data=f"current_speaker?id={speaker['id']}",
         )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_event?id={event_id}")
 
     builder.adjust(*parse_button(start=1, middle=len(event_speakers), end=2))
@@ -131,7 +131,7 @@ def admin_keyboard_setting(event_id):
         text="Настройки спикеров",
         callback_data=f"setting_speaker?id={event_id}",
     )
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data="change_event")
 
     builder.adjust(1, 2, 2)
@@ -162,7 +162,7 @@ def admin_keyboard_builder_event(event_id):
         callback_data=f"pre_delete_row?table=events&field=_&id={event_id}",
     )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_event?id={event_id}")
 
     builder.adjust(2, 2, 1, 2)
@@ -194,7 +194,7 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
         callback_data=f"pre_delete_row?table=quizes&field=_&id={event_id}",
     )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"setting_survey?id={event_id}")
 
     builder.adjust(1, 3, 1, 2)
@@ -217,7 +217,7 @@ def admin_keyboard_setting_variant(variant_id, quiz_id):
         callback_data=f"pre_delete_row?table=variants&field=_&id={variant_id}",
     )
 
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text=f"Назад", callback_data=f"current_quiz?id={quiz_id}")
 
     builder.adjust(2, 1, 2)
@@ -244,7 +244,7 @@ def admin_keyboard_setting_speaker(speaker_id, event_id):
         callback_data=f"pre_delete_row?table=speakers&field=_&id={event_id}",
     )
     builder.button(text="Назад", callback_data=f"setting_speaker?id={event_id}")
-    builder.button(text="В меню", callback_data="menu")
+    builder.button(text="В меню", callback_data="admin_menu")
 
     builder.adjust(3, 1, 2)
     return builder.as_markup()
@@ -259,11 +259,11 @@ def admin_keyboard_confirm(callback):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Подтвердить", callback_data=f"{callback}")],
-            [InlineKeyboardButton(text="Отмена", callback_data="none")],
+            [InlineKeyboardButton(text="Отмена", callback_data="admin_none")],
         ]
     )
 
 
 admin_keyboard_cancel = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Отмена", callback_data="none")]],
+    inline_keyboard=[[InlineKeyboardButton(text="Отмена", callback_data="admin_none")]],
 )

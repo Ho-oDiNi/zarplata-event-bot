@@ -229,6 +229,21 @@ def get_quiz_variants(id):
     return data
 
 
+def get_speaker_questions(id):
+    cursor = DB.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT *
+        FROM `questions` 
+        WHERE `speaker_id` = {id}
+        """
+    )
+    data = cursor.fetchall()
+    cursor.close()
+
+    return data
+
+
 def get_nearest_events():
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
@@ -251,6 +266,7 @@ def increment_variant(id):
     update_by_id("variants", "result", id, result + 1)
 
 
+# Обьединить в функции get_by_FK()
 def get_by_tg_id(tg_id):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
@@ -282,10 +298,20 @@ def get_max_cell(table, FK_field, FK_value):
     cursor = DB.cursor(dictionary=True)
     cursor.execute(
         f"""
-        SELECT MAX(`cell`) as cell FROM `{table}` WHERE `{FK_field}` = {FK_value} LIMIT 1
+        SELECT *
+        FROM `{table}`
+        WHERE `{FK_field}` = {FK_value}
+        ORDER BY `cell` DESC
+        LIMIT 1
         """
     )
     data = cursor.fetchone()
     cursor.close()
 
     return data
+
+
+def create_question(content, cell, speaker_id):
+    question_id = insert_row("questions", "content", content)
+    update_by_id("questions", "cell", question_id, cell)
+    update_by_id("questions", "speaker_id", question_id, speaker_id)

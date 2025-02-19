@@ -48,7 +48,7 @@ async def pre_change_table(callback: CallbackQuery, bot: Bot, state: FSMContext)
     await state.update_data(requestId=event["id"])
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Вы уверены, что хотите сменить таблицу?\n\nВНИМАНИЕ!\n\nПроцессс занимает МНОГО времени,\nа ВСЕ вопросы спикерам будут БЕЗВОЗРАТНО удалены",
+        text=f"Вы уверены, что хотите сменить таблицу?\n\nВНИМАНИЕ!\n\nПроцессс занимает МНОГО времени",
         reply_markup=admin_keyboard_confirm("change_table"),
     )
 
@@ -61,6 +61,7 @@ async def pre_change_table(callback: CallbackQuery, bot: Bot, state: FSMContext)
     )
 
     adminState = await state.get_data()
+    bot.google_table.changeTable(adminState["requestId"])
 
     await bot.send_message(
         chat_id=callback.from_user.id,
@@ -107,7 +108,7 @@ async def on_current_variant(callback: CallbackQuery, bot: Bot):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выбран опрос {variant["name"]}",
+        text=f"Выбран вариант {variant["name"]}",
         reply_markup=admin_keyboard_setting_variant(variant["id"], variant["quiz_id"]),
     )
 
@@ -172,7 +173,7 @@ async def setting_variants(callback: CallbackQuery, bot: Bot):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выбирите варинт ответов для {quiz["name"]}",
+        text=f"Выбирите вариант ответов для {quiz["name"]}",
         reply_markup=admin_keyboard_builder_variants(quiz["id"]),
     )
 
@@ -360,7 +361,7 @@ async def copy_quiz(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await state.clear()
 
 
-@router.callback_query(F.data == "menu")
+@router.callback_query(F.data == "admin_menu")
 async def move_to_menu(callback: CallbackQuery, bot: Bot):
     await bot.send_message(
         chat_id=callback.from_user.id,
@@ -369,7 +370,7 @@ async def move_to_menu(callback: CallbackQuery, bot: Bot):
     )
 
 
-@router.callback_query(F.data == "none")
+@router.callback_query(F.data == "admin_none")
 async def cancel(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await bot.send_message(
         chat_id=callback.from_user.id,
