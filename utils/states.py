@@ -16,6 +16,7 @@ class Admin(StatesGroup):
     requestTable = State()
 
     massMailing = State()
+    addPhoto = State()
 
     createRow = State()
     changeRow = State()

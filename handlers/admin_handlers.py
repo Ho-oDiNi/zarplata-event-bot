@@ -21,12 +21,26 @@ async def admin_handler_menu(message: Message):
 async def admin_handler_mailing(message: Message, state: FSMContext, bot: Bot):
     await bot.send_chat_action(message.from_user.id, action="typing")
     await state.update_data(massMailing=message.text)
+    await state.update_data(addPhoto=None)
 
-    adminState = await state.get_data()
-    event = get_by_id("events", adminState["requestId"])
+    await state.set_state(Admin.addPhoto)
     await bot.send_message(
         chat_id=message.from_user.id,
-        text=f"Подтвердите отправку вопроса для всех юзеров {event["name"]}:\n{message.text}",
+        text=f"Прикрепите изображение для отправки\nИЛИ нажмите 'Подтвердить' для отправки",
+        reply_markup=admin_keyboard_confirm("send_mailing"),
+    )
+
+
+@router.message(Admin.addPhoto)
+async def add_photo_mailing(message: Message, state: FSMContext, bot: Bot):
+    await state.update_data(addPhoto=message.photo[-1].file_id)
+    adminState = await state.get_data()
+
+    event = get_by_id("events", adminState["requestId"])
+    await bot.send_photo_if_exist(
+        chat_id=message.from_user.id,
+        caption=adminState["addPhoto"],
+        text=f"Подтвердите отправку вопроса для {event["name"]}:\n{adminState["massMailing"]}",
         reply_markup=admin_keyboard_confirm("send_mailing"),
     )
 

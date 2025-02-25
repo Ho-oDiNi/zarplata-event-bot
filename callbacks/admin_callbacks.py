@@ -199,8 +199,9 @@ async def send_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext):
     adminState = await state.get_data()
     for user in get_event_users(adminState["requestId"]):
         try:
-            await bot.send_message(
+            await bot.send_photo_if_exist(
                 chat_id=user["tg_id"],
+                caption=f"{adminState["addPhoto"]}",
                 text=f"{adminState["massMailing"]}",
             )
         except:
