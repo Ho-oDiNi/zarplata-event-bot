@@ -71,6 +71,30 @@ async def admin_handler_creating(message: Message, state: FSMContext, bot: Bot):
         reply_markup=admin_keyboard_confirm("create_row"),
     )
 
+@router.message(Admin.changeFileId)
+async def admin_handler_changing_img(message: Message, state: FSMContext, bot: Bot):
+    await bot.send_chat_action(message.from_user.id, action="typing")
+    if message.photo:
+        file_id = message.photo[-1].file_id
+    elif message.document:
+        file_id = message.document.file_id
+    
+    await state.update_data(changeFileId=file_id)
+    adminState = await state.get_data()
+    update_by_id(
+        adminState["requestTable"],
+        adminState["requestField"],
+        adminState["requestId"],
+        adminState["changeFileId"],
+    )
+
+    await bot.send_message(
+        chat_id=message.from_user.id,
+        text=f"Успешно изменено",
+        reply_markup=admin_keyboard_main(),
+    )
+    await state.clear()
+
 
 @router.message()
 async def echo(message: Message):

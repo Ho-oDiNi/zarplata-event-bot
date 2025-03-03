@@ -34,9 +34,9 @@ async def user_handler_info(message: Message, bot: Bot):
         print("Msg not found")
 
     await bot.send_chat_action(message.from_user.id, action="typing")
-    msg = await bot.send_photo_if_exist(
+    msg = await bot.send_document_if_exist(
         chat_id=message.chat.id,
-        caption=URLInputFile(IMG),
+        document=get_current_event()["img"],
         text=get_current_event()["content"],
         reply_markup=user_keyboard_main,
     )
@@ -130,7 +130,7 @@ async def user_handler_confirm(message: Message, state: FSMContext, bot: Bot):
     speaker = get_by_id("speakers", userState["speaker_id"])
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(speaker["img"]),
+        caption=speaker["img"],
         text=f"Подтвердите отправку вопроса для {speaker["name"]}:\n{message.text}",
         reply_markup=user_keyboard_confirm,
     )

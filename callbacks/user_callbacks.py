@@ -19,7 +19,7 @@ async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await state.update_data(quizId=quiz["id"])
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=URLInputFile(quiz["img"]),
+        caption=quiz["img"],
         text=f"{quiz["name"]}\n{quiz["content"]}",
         reply_markup=user_keyboard_builder_variants(quiz["id"]),
     )
@@ -64,7 +64,7 @@ async def walkthrough_survey(callback: CallbackQuery, state: FSMContext, bot: Bo
         await state.update_data(quizId=quiz["id"])
         msg = await bot.send_photo_if_exist(
             chat_id=callback.from_user.id,
-            caption=URLInputFile(quiz["img"]),
+            caption=quiz["img"],
             text=f"{quiz["name"]}\n{quiz["content"]}",
             reply_markup=user_keyboard_builder_variants(quiz["id"]),
         )
@@ -84,7 +84,7 @@ async def ask_question_speaker(callback: CallbackQuery, state: FSMContext, bot: 
     await state.set_state(User.question)
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=URLInputFile(speaker["img"]),
+        caption=speaker["img"],
         text=f"Введите вопрос для {speaker["name"]}:",
         reply_markup=user_keyboard_cancel,
     )

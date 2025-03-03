@@ -22,4 +22,5 @@ class Admin(StatesGroup):
     changeRow = State()
     deleteRow = State()
 
+    changeFileId = State()
     copyQuiz = State()

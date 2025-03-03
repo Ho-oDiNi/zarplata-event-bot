@@ -233,6 +233,24 @@ async def pre_change_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     )
 
 
+@router.callback_query(F.data.startswith("pre_change_img"))
+async def pre_change_img(callback: CallbackQuery, bot: Bot, state: FSMContext):
+    callback_table, callback_field, callback_id = parse_callback_data(callback.data)
+
+    await state.update_data(requestTable=callback_table)
+    await state.update_data(requestField=callback_field)
+    await state.update_data(requestId=callback_id)
+
+    data = get_by_id(callback_table, callback_id)
+
+    await state.set_state(Admin.changeFileId)
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=f"Прикрепите новое фото или файл для {data["name"]}",
+        reply_markup=admin_keyboard_cancel,
+    )
+    
+    
 @router.callback_query(F.data.startswith("pre_delete_row"))
 async def pre_delete_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     callback_table, _, callback_id = parse_callback_data(callback.data)

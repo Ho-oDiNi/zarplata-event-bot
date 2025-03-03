@@ -150,8 +150,8 @@ def admin_keyboard_builder_event(event_id):
         callback_data=f"pre_change_row?table=events&field=content&id={event_id}",
     )
     builder.button(
-        text="Сменить фото",
-        callback_data=f"pre_change_row?table=events&field=img&id={event_id}",
+        text="Сменить файл программы",
+        callback_data=f"pre_change_img?table=events&field=img&id={event_id}",
     )
     builder.button(
         text="Сменить дату",
@@ -186,7 +186,7 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
     )
     builder.button(
         text="Сменить фото",
-        callback_data=f"pre_change_row?table=quizes&field=img&id={quiz_id}",
+        callback_data=f"pre_change_img?table=quizes&field=img&id={quiz_id}",
     )
 
     builder.button(
@@ -237,7 +237,7 @@ def admin_keyboard_setting_speaker(speaker_id, event_id):
     )
     builder.button(
         text="Сменить фото",
-        callback_data=f"pre_change_row?table=speakers&field=img&id={speaker_id}",
+        callback_data=f"pre_change_img?table=speakers&field=img&id={speaker_id}",
     )
     builder.button(
         text="Удалить Спикера",
