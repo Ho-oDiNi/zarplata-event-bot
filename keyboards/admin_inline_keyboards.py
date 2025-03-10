@@ -36,7 +36,7 @@ def admin_keyboard_main():
 def admin_keyboard_builder_events(callback):
     builder = InlineKeyboardBuilder()
     nearest_events = get_nearest_events()
-    for event in nearest_events:
+    for event in nearest_events or []:
         builder.button(
             text=f"{event['name']}",
             callback_data=f"{callback}?id={event['id']}",
@@ -61,7 +61,7 @@ def admin_keyboard_builder_quizes(event_id):
     )
 
     event_quizes = get_event_quizes(event_id)
-    for quiz in event_quizes:
+    for quiz in event_quizes or []:
         builder.button(
             text=f"{quiz['name']}",
             callback_data=f"current_quiz?id={quiz['id']}",
@@ -70,7 +70,7 @@ def admin_keyboard_builder_quizes(event_id):
     builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_event?id={event_id}")
 
-    builder.adjust(*parse_button(start=2, middle=len(event_quizes), end=2))
+    builder.adjust(*parse_button(start=2, middle=len(event_quizes or []), end=2))
     return builder.as_markup(one_time_keyboard=True)
 
 
@@ -82,7 +82,7 @@ def admin_keyboard_builder_variants(quiz_id):
         callback_data=f"pre_create_row?table=variants&field=name&id={quiz_id}",
     )
     quiz_variants = get_quiz_variants(quiz_id)
-    for variant in quiz_variants:
+    for variant in quiz_variants or []:
         builder.button(
             text=f"{variant['name']}",
             callback_data=f"current_variant?id={variant['id']}",
@@ -91,7 +91,7 @@ def admin_keyboard_builder_variants(quiz_id):
     builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_quiz?id={quiz_id}")
 
-    builder.adjust(*parse_button(start=1, middle=len(quiz_variants), end=2))
+    builder.adjust(*parse_button(start=1, middle=len(quiz_variants or []), end=2))
     return builder.as_markup(one_time_keyboard=True)
 
 
@@ -103,7 +103,7 @@ def admin_keyboard_builder_speakers(event_id):
         callback_data=f"pre_create_row?table=speakers&field=name&id={event_id}",
     )
     event_speakers = get_event_speakers(event_id)
-    for speaker in event_speakers:
+    for speaker in event_speakers or []:
         builder.button(
             text=f"{speaker['name']}",
             callback_data=f"current_speaker?id={speaker['id']}",
@@ -112,7 +112,7 @@ def admin_keyboard_builder_speakers(event_id):
     builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_event?id={event_id}")
 
-    builder.adjust(*parse_button(start=1, middle=len(event_speakers), end=2))
+    builder.adjust(*parse_button(start=1, middle=len(event_speakers or []), end=2))
     return builder.as_markup(one_time_keyboard=True)
 
 

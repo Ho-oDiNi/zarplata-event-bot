@@ -70,11 +70,11 @@ class GoogleTable:
         self.wksSpeakers.clear(start="B1", end="H30")
 
         event_speakers = get_event_speakers(event_id)
-        for speaker in event_speakers:
+        for speaker in event_speakers or []:
             self.wksSpeakers.cell(speaker["cell"]).set_value(speaker["name"])
 
             speaker_questions = get_speaker_questions(speaker["id"])
-            for quiestion in speaker_questions:
+            for quiestion in speaker_questions or []:
                 if quiestion:
                     self.wksSpeakers.cell(quiestion["cell"]).set_value(
                         quiestion["content"]
@@ -84,14 +84,14 @@ class GoogleTable:
         self.wksSurvey.clear()
 
         event_quizes = get_event_quizes(event_id)
-        for quiz in event_quizes:
+        for quiz in event_quizes or []:
             self.wksSurvey.cell(quiz["cell"]).set_value(quiz["name"])
             self.wksSurvey.cell(f"{step_letter(quiz["cell"][:1], 1)}1").set_value(
                 "Результаты"
             )
 
             quiz_variants = get_quiz_variants(quiz["id"])
-            for variant in quiz_variants:
+            for variant in quiz_variants or []:
                 if variant:
                     self.wksSurvey.cell(
                         f"{step_letter(variant["cell"][:1], -1)}{variant["cell"][1:]}"
