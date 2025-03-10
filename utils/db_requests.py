@@ -4,11 +4,8 @@ from config.bot_config import DB
 def set_user(tg_id):
     cursor = DB.cursor()
     query = f"""
-        INSERT IGNORE INTO `users` (`tg_id`, `event_id`) 
-        VALUES ({tg_id}, {get_current_event()['id']})
-        ON DUPLICATE KEY UPDATE
-        `event_id` = {get_current_event()['id']},
-        `is_passed` = 0
+        INSERT OR REPLACE INTO users (tg_id, event_id, is_passed)
+        VALUES({tg_id}, {get_current_event()['id']}, 0)
         """
     cursor.execute(query)
     DB.commit()
@@ -16,7 +13,7 @@ def set_user(tg_id):
 
 
 def get_event_speakers(event_id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -27,11 +24,11 @@ def get_event_speakers(event_id):
     data = cursor.fetchall()
     cursor.close()
 
-    return data
+    return [dict(row) for row in data] if data else None
 
 
 def get_event_users(event_id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -42,27 +39,27 @@ def get_event_users(event_id):
     data = cursor.fetchall()
     cursor.close()
 
-    return data
+    return [dict(row) for row in data] if data else None
 
 
 def get_current_event():
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         """
         SELECT * 
-        FROM `events` 
-        WHERE `date` BETWEEN CURDATE() - INTERVAL 1 DAY AND CURDATE() + INTERVAL 2 DAY
+        FROM events 
+        WHERE date BETWEEN DATE('now', '-1 day') AND DATE('now', '+2 day')
         LIMIT 1
         """
     )
     data = cursor.fetchone()
     cursor.close()
 
-    return data
+    return dict(data) if data else None
 
 
 def get_by_id(table, id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -73,11 +70,11 @@ def get_by_id(table, id):
     data = cursor.fetchone()
     cursor.close()
 
-    return data
+    return dict(data) if data else None
 
 
 def update_by_id(table, field, id, value):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         UPDATE `{table}`
@@ -90,7 +87,7 @@ def update_by_id(table, field, id, value):
 
 
 def delete_by_id(table, id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         DELETE FROM  `{table}`
@@ -167,7 +164,7 @@ def copy_quiz_by_id(current_event_id, copyed_event_id):
 
 
 def insert_row(table, field, value):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         INSERT INTO {table} (`{field}`) VALUES ('{value}')
@@ -181,7 +178,7 @@ def insert_row(table, field, value):
 
 
 def get_next_quiz(current_id=None):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     query = f"""
         SELECT *
         FROM `quizes` 
@@ -196,11 +193,11 @@ def get_next_quiz(current_id=None):
     data = cursor.fetchone()
     cursor.close()
 
-    return data
+    return dict(data) if data else None
 
 
 def get_event_quizes(id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -211,11 +208,11 @@ def get_event_quizes(id):
     data = cursor.fetchall()
     cursor.close()
 
-    return data
+    return [dict(row) for row in data] if data else None
 
 
 def get_quiz_variants(id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -226,11 +223,11 @@ def get_quiz_variants(id):
     data = cursor.fetchall()
     cursor.close()
 
-    return data
+    return [dict(row) for row in data] if data else None
 
 
 def get_speaker_questions(id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -241,24 +238,22 @@ def get_speaker_questions(id):
     data = cursor.fetchall()
     cursor.close()
 
-    return data
+    return [dict(row) for row in data] if data else None
 
 
 def get_nearest_events():
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         """
         SELECT * 
         FROM `events` 
-        WHERE (`date` BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE() + INTERVAL 30 DAY)
-        OR `date` IS NULL
         ORDER BY `date` ASC
         """
     )
     data = cursor.fetchall()
     cursor.close()
 
-    return data
+    return [dict(row) for row in data] if data else None
 
 
 def increment_variant(id):
@@ -268,7 +263,7 @@ def increment_variant(id):
 
 # Обьединить в функции get_by_FK()
 def get_by_tg_id(tg_id):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -279,7 +274,7 @@ def get_by_tg_id(tg_id):
     data = cursor.fetchone()
     cursor.close()
 
-    return data
+    return dict(data) if data else None
 
 
 def set_user_passed(tg_id):
@@ -295,7 +290,7 @@ def set_msg_id(tg_id, msg_id):
 
 
 def get_max_cell(table, FK_field, FK_value):
-    cursor = DB.cursor(dictionary=True)
+    cursor = DB.cursor()
     cursor.execute(
         f"""
         SELECT *
@@ -308,7 +303,7 @@ def get_max_cell(table, FK_field, FK_value):
     data = cursor.fetchone()
     cursor.close()
 
-    return data
+    return dict(data) if data else None
 
 
 def create_question(content, cell, speaker_id):
