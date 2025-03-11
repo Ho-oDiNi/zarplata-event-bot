@@ -241,7 +241,7 @@ def admin_keyboard_setting_speaker(speaker_id, event_id):
     )
     builder.button(
         text="Удалить Спикера",
-        callback_data=f"pre_delete_row?table=speakers&field=_&id={event_id}",
+        callback_data=f"pre_delete_row?table=speakers&field=_&id={speaker_id}",
     )
     builder.button(text="Назад", callback_data=f"setting_speaker?id={event_id}")
     builder.button(text="В меню", callback_data="admin_menu")

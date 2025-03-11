@@ -85,7 +85,7 @@ async def ask_question_speaker(callback: CallbackQuery, state: FSMContext, bot: 
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
         caption=speaker["img"],
-        text=f"Введите вопрос для {speaker["name"]}:",
+        text=f"Введите вопрос для \n{speaker["name"]} \n{speaker["content"]}",
         reply_markup=user_keyboard_cancel,
     )
 

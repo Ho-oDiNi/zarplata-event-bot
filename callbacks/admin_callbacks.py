@@ -119,9 +119,10 @@ async def on_current_speaker(callback: CallbackQuery, bot: Bot):
         "speakers",
         callback.data.partition("id=")[2],
     )
-    await bot.send_message(
+    await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        text=f"Выбран спикер {speaker["name"]}",
+        caption=speaker["img"],
+        text=f"Выбран спикер {speaker["name"]}\n{speaker["content"]}",
         reply_markup=admin_keyboard_setting_speaker(speaker["id"], speaker["event_id"]),
     )
 
@@ -249,8 +250,8 @@ async def pre_change_img(callback: CallbackQuery, bot: Bot, state: FSMContext):
         text=f"Прикрепите новое фото или файл для {data["name"]}",
         reply_markup=admin_keyboard_cancel,
     )
-    
-    
+
+
 @router.callback_query(F.data.startswith("pre_delete_row"))
 async def pre_delete_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     callback_table, _, callback_id = parse_callback_data(callback.data)
@@ -259,7 +260,6 @@ async def pre_delete_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
     await state.update_data(requestId=callback_id)
 
     data = get_by_id(callback_table, callback_id)
-
     await state.set_state(Admin.deleteRow)
     await bot.send_message(
         chat_id=callback.from_user.id,
