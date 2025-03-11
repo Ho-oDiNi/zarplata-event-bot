@@ -95,7 +95,7 @@ async def on_current_quiz(callback: CallbackQuery, bot: Bot):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выбран опрос {quiz["name"]}",
+        text=f"{parse_quiz_content(quiz)}",
         reply_markup=admin_keyboard_setting_quiz(quiz["id"], quiz["event_id"]),
     )
 
@@ -108,7 +108,7 @@ async def on_current_variant(callback: CallbackQuery, bot: Bot):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выбран вариант {variant["name"]}",
+        text=f"{variant["name"]}",
         reply_markup=admin_keyboard_setting_variant(variant["id"], variant["quiz_id"]),
     )
 
@@ -122,7 +122,7 @@ async def on_current_speaker(callback: CallbackQuery, bot: Bot):
     await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
         caption=speaker["img"],
-        text=f"Выбран спикер {speaker["name"]}\n{speaker["content"]}",
+        text=f"{speaker["name"]}\n{speaker["content"]}",
         reply_markup=admin_keyboard_setting_speaker(speaker["id"], speaker["event_id"]),
     )
 
@@ -133,10 +133,15 @@ async def setting_event(callback: CallbackQuery, bot: Bot):
         "events",
         callback.data.partition("id=")[2],
     )
-    await bot.send_message(
+    await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        text=f"Внесите изменение в ивенте {event["name"]}",
+        caption=get_current_event()["img"],
+        text=f"{event["name"]}\n{event["content"]}\n",
         reply_markup=admin_keyboard_builder_event(event["id"]),
+    )
+    await bot.send_document_if_exist(
+        chat_id=callback.from_user.id,
+        document=get_current_event()["document"],
     )
 
 
@@ -148,7 +153,7 @@ async def setting_survey(callback: CallbackQuery, bot: Bot):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выбирите опрос для {event["name"]}",
+        text=f"Выбирите вопрос для {event["name"]}",
         reply_markup=admin_keyboard_builder_quizes(event["id"]),
     )
 
@@ -174,7 +179,7 @@ async def setting_variants(callback: CallbackQuery, bot: Bot):
     )
     await bot.send_message(
         chat_id=callback.from_user.id,
-        text=f"Выбирите вариант ответов для {quiz["name"]}",
+        text=f"Выбирите ответ для \n{quiz["name"]}",
         reply_markup=admin_keyboard_builder_variants(quiz["id"]),
     )
 
@@ -198,13 +203,26 @@ async def prepare_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext):
 @router.callback_query(F.data == "send_mailing")
 async def send_mailing(callback: CallbackQuery, bot: Bot, state: FSMContext):
     adminState = await state.get_data()
+    print(adminState)
     for user in get_event_users(adminState["requestId"]):
         try:
-            await bot.send_photo_if_exist(
-                chat_id=user["tg_id"],
-                caption=f"{adminState["addPhoto"]}",
-                text=f"{adminState["massMailing"]}",
-            )
+            if adminState["addPhoto"]:
+                await bot.send_photo_if_exist(
+                    chat_id=user["tg_id"],
+                    caption=adminState["addPhoto"],
+                    text=f"{adminState["massMailing"]}",
+                )
+            elif adminState["addDocument"]:
+                await bot.send_document_if_exist(
+                    chat_id=user["tg_id"],
+                    document=adminState["addDocument"],
+                    text=f"{adminState["massMailing"]}",
+                )
+            else:
+                await bot.send_message(
+                    chat_id=user["tg_id"],
+                    text=f"{adminState["massMailing"]}",
+                )
         except:
             print(f"Чат {user["tg_id"]} не доступен")
 
@@ -331,25 +349,6 @@ async def create_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
         reply_markup=admin_keyboard_confirm(
             f"pre_create_row?table={adminState["requestTable"]}&field={adminState["requestField"]}&id={adminState["requestId"]}"
         ),
-    )
-    await state.clear()
-
-
-@router.callback_query(F.data == "change_row")
-async def change_row(callback: CallbackQuery, bot: Bot, state: FSMContext):
-    adminState = await state.get_data()
-
-    update_by_id(
-        adminState["requestTable"],
-        adminState["requestField"],
-        adminState["requestId"],
-        adminState["changeRow"],
-    )
-
-    await bot.send_message(
-        chat_id=callback.from_user.id,
-        text=f"Успешно изменено",
-        reply_markup=admin_keyboard_main(),
     )
     await state.clear()
 

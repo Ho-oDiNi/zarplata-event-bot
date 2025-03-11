@@ -17,6 +17,7 @@ class Admin(StatesGroup):
 
     massMailing = State()
     addPhoto = State()
+    addDocument = State()
 
     createRow = State()
     changeRow = State()

@@ -103,8 +103,8 @@ def copy_quiz_by_id(current_event_id, copyed_event_id):
     cursor.execute(
         f"""
         -- Шаг 1: Копируем quizes
-        INSERT INTO `quizes` (`name`, `content`, `cell`, `img`, `event_id`)
-        SELECT `name`, `content`, `cell`, `img`, {current_event_id}
+        INSERT INTO `quizes` (`name`, `cell`, `img`, `event_id`)
+        SELECT `name`, `cell`, `img`, {current_event_id}
         FROM `quizes`
         WHERE `event_id` = {copyed_event_id};
         """

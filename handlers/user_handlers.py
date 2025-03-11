@@ -1,5 +1,5 @@
 from aiogram import Router, F, Bot
-from aiogram.types import Message, URLInputFile
+from aiogram.types import Message, FSInputFile
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from keyboards.user_reply_keyboards import *
@@ -13,31 +13,33 @@ router = Router()
 router.message.filter((HasEventFilter()))
 
 
-@router.message(Command("start", "restart"))
+@router.message(Command("start", "restart", "Start", "Restart"))
 async def user_handler_menu(message: Message, bot: Bot):
     set_user(message.from_user.id)
-    await message.answer(
-        text=f"Привет, {message.from_user.first_name}, рады видеть на {get_current_event()['name']}",
+    await bot.send_photo_if_exist(
+        chat_id=message.chat.id,
+        caption=get_current_event()["img"],
+        text=get_current_event()["content"],
         reply_markup=user_keyboard_main,
     )
+
     await user_handler_info(message, bot)
 
 
 @router.message(
-    F.text.lower().in_({"назад ⬅️", "об ивенте 📢", "назад", "об ивенте", "меню"})
+    F.text.lower().in_({"назад ⬅️", "программа 📢", "назад", "программа", "меню"})
 )
-@router.message(Command("menu"))
+@router.message(Command("menu", "Menu"))
 async def user_handler_info(message: Message, bot: Bot):
     try:
         await bot.delete_message(message.from_user.id, get_msg_id(message.from_user.id))
     except:
-        print("Msg not found")
+        print("Message not found")
 
     await bot.send_chat_action(message.from_user.id, action="typing")
     msg = await bot.send_document_if_exist(
         chat_id=message.chat.id,
-        document=get_current_event()["img"],
-        text=get_current_event()["content"],
+        document=get_current_event()["document"],
         reply_markup=user_keyboard_main,
     )
 
@@ -53,8 +55,8 @@ async def user_handler_quiz(message: Message, bot: Bot):
     if get_by_tg_id(message.from_user.id)["is_passed"]:
         msg = await bot.send_photo_if_exist(
             chat_id=message.from_user.id,
-            caption=URLInputFile(IMG),
-            text="Вы уже проходили опрос",
+            caption=FSInputFile("images/already-gone.webp"),
+            text="Опрос уже пройден",
             reply_markup=user_keyboard_main,
         )
         set_msg_id(message.from_user.id, msg.message_id)
@@ -63,8 +65,8 @@ async def user_handler_quiz(message: Message, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(IMG),
-        text=f"Вы готовы начать?",
+        caption=FSInputFile("images/are-u-ready.webp"),
+        text=f"Готовы начать?",
         reply_markup=user_keyboard_survey_start,
     )
 
@@ -79,8 +81,8 @@ async def user_handler_question(message: Message, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(IMG),
-        text=f"Кому Вы хотите задать вопрос?",
+        caption=FSInputFile("images/ask-question.webp"),
+        text=f"Кому хотите задать вопрос?",
         reply_markup=user_keyboard_ask_question,
     )
 
@@ -95,7 +97,7 @@ async def user_handler_ask_speaker(message: Message, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(IMG),
+        caption=FSInputFile("images/ask-speaker.webp"),
         text=f"Выберете спикера",
         reply_markup=user_keyboard_builder_speakers(),
     )
@@ -111,8 +113,8 @@ async def user_handler_ask_management(message: Message, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(IMG),
-        text=f"Задайте любой интересующий Вас вопрос",
+        caption=FSInputFile("images/ask-manager.webp"),
+        text=f"Задайте любой интересующий вопрос",
         reply_markup=user_keyboard_builder_feedback(),
     )
 
@@ -146,7 +148,7 @@ async def error_message(message: Message, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=message.from_user.id,
-        caption=URLInputFile(IMG),
+        caption=FSInputFile("images/action-cancell.webp"),
         text=f"Что-то пошло не так...\nПопробуйте ввести /menu",
     )
 

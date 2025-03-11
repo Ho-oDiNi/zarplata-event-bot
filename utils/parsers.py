@@ -75,3 +75,11 @@ def parse_next_cell(table, FK_field, FK_id):
         if table == "variants":
             cell = get_by_id("quizes", FK_id)["cell"]
             return f"{step_letter(cell[:1], 1)}2"
+
+
+def parse_quiz_content(quiz):
+    quiz_content = f"{quiz["name"]}\n"
+    for variant in get_quiz_variants(quiz["id"]) or []:
+        quiz_content += f"{variant['name']}\n"
+
+    return quiz_content

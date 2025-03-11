@@ -18,8 +18,10 @@ async def main():
 
         async def send_photo_if_exist(self, chat_id, caption, text, reply_markup=None):
             return await send_photo_register(self, chat_id, caption, text, reply_markup)
-        
-        async def send_document_if_exist(self, chat_id, document, text, reply_markup=None):
+
+        async def send_document_if_exist(
+            self, chat_id, document, text=None, reply_markup=None
+        ):
             return await send_file_register(self, chat_id, document, text, reply_markup)
 
     bot: ZPEventBot = ZPEventBot(

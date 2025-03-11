@@ -3,6 +3,7 @@ CREATE TABLE events (
     name TEXT NOT NULL,
     content TEXT,
     img TEXT,
+    document TEXT,
     date DATETIME
 );
 
@@ -19,7 +20,6 @@ CREATE TABLE questions (
 CREATE TABLE quizes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    content TEXT,
     cell TEXT,
     img TEXT,
     event_id INTEGER,

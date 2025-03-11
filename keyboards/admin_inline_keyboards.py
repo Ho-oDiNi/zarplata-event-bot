@@ -1,6 +1,7 @@
 from aiogram.utils.keyboard import *
 from utils.db_requests import *
 from utils.parsers import *
+from config.bot_config import GOOGLE_URL
 
 
 def admin_keyboard_main():
@@ -19,17 +20,20 @@ def admin_keyboard_main():
         text="Создать Ивент",
         callback_data="pre_create_row?table=events&field=name&id=_",
     )
-
     builder.button(
-        text="Отправить рассылку",
-        callback_data=f"pre_mass_mailing",
+        text="Открыть гугл таблицу",
+        url=f"{GOOGLE_URL}",
     )
     builder.button(
         text="Переключить гугл таблицу",
         callback_data=f"pre_change_table",
     )
+    builder.button(
+        text="Отправить рассылку",
+        callback_data=f"pre_mass_mailing",
+    )
 
-    builder.adjust(1, 2, 2)
+    builder.adjust(1, 2, 2, 1)
     return builder.as_markup(one_time_keyboard=True)
 
 
@@ -78,7 +82,7 @@ def admin_keyboard_builder_variants(quiz_id):
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="Добавить вариант",
+        text="Добавить ответ",
         callback_data=f"pre_create_row?table=variants&field=name&id={quiz_id}",
     )
     quiz_variants = get_quiz_variants(quiz_id)
@@ -150,13 +154,19 @@ def admin_keyboard_builder_event(event_id):
         callback_data=f"pre_change_row?table=events&field=content&id={event_id}",
     )
     builder.button(
-        text="Сменить файл программы",
-        callback_data=f"pre_change_img?table=events&field=img&id={event_id}",
-    )
-    builder.button(
         text="Сменить дату",
         callback_data=f"pre_change_row?table=events&field=date&id={event_id}",
     )
+
+    builder.button(
+        text="Сменить фото заставки",
+        callback_data=f"pre_change_img?table=events&field=img&id={event_id}",
+    )
+    builder.button(
+        text="Сменить файл программы",
+        callback_data=f"pre_change_img?table=events&field=document&id={event_id}",
+    )
+
     builder.button(
         text="Удалить Ивент",
         callback_data=f"pre_delete_row?table=events&field=_&id={event_id}",
@@ -165,7 +175,7 @@ def admin_keyboard_builder_event(event_id):
     builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"current_event?id={event_id}")
 
-    builder.adjust(2, 2, 1, 2)
+    builder.adjust(3, 2, 1, 2)
     return builder.as_markup()
 
 
@@ -181,10 +191,6 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
         callback_data=f"pre_change_row?table=quizes&field=name&id={quiz_id}",
     )
     builder.button(
-        text="Изменить описание",
-        callback_data=f"pre_change_row?table=quizes&field=content&id={quiz_id}",
-    )
-    builder.button(
         text="Сменить фото",
         callback_data=f"pre_change_img?table=quizes&field=img&id={quiz_id}",
     )
@@ -197,7 +203,7 @@ def admin_keyboard_setting_quiz(quiz_id, event_id):
     builder.button(text="В меню", callback_data="admin_menu")
     builder.button(text="Назад", callback_data=f"setting_survey?id={event_id}")
 
-    builder.adjust(1, 3, 1, 2)
+    builder.adjust(1, 2, 1, 2)
     return builder.as_markup()
 
 

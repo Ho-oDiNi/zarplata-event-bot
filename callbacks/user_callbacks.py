@@ -1,10 +1,11 @@
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, URLInputFile
+from aiogram.types import CallbackQuery, FSInputFile
 from keyboards.user_reply_keyboards import *
 from keyboards.user_inline_keyboards import *
 from utils.states import User, Survey
 from config.bot_config import IMG
+from utils.parsers import *
 
 router = Router()
 
@@ -17,10 +18,11 @@ async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
     quiz = get_next_quiz()
 
     await state.update_data(quizId=quiz["id"])
+
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
         caption=quiz["img"],
-        text=f"{quiz["name"]}\n{quiz["content"]}",
+        text=f"{parse_quiz_content(quiz)}",
         reply_markup=user_keyboard_builder_variants(quiz["id"]),
     )
 
@@ -34,8 +36,8 @@ async def start_survey(callback: CallbackQuery, state: FSMContext, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=URLInputFile(IMG),
-        text="Результаты отправлены на доску",
+        caption=FSInputFile("images/result-sent.webp"),
+        text="Результаты отправлены организаторам",
         reply_markup=user_keyboard_main,
     )
 
@@ -56,16 +58,17 @@ async def walkthrough_survey(callback: CallbackQuery, state: FSMContext, bot: Bo
     if quiz == None:
         msg = await bot.send_photo_if_exist(
             chat_id=callback.from_user.id,
-            text="Поздравляем, ты ответил на все вопросы",
-            caption=URLInputFile(IMG),
+            text="Поздравляем, опрос пройден!",
+            caption=FSInputFile("images/congratulate.webp"),
             reply_markup=user_keyboard_survey_end,
         )
     else:
         await state.update_data(quizId=quiz["id"])
+
         msg = await bot.send_photo_if_exist(
             chat_id=callback.from_user.id,
             caption=quiz["img"],
-            text=f"{quiz["name"]}\n{quiz["content"]}",
+            text=f"{parse_quiz_content(quiz)}",
             reply_markup=user_keyboard_builder_variants(quiz["id"]),
         )
 
@@ -85,7 +88,7 @@ async def ask_question_speaker(callback: CallbackQuery, state: FSMContext, bot: 
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
         caption=speaker["img"],
-        text=f"Введите вопрос для \n{speaker["name"]} \n{speaker["content"]}",
+        text=f"Введите вопрос для \n{speaker["name"]}, {speaker["content"]}",
         reply_markup=user_keyboard_cancel,
     )
 
@@ -100,7 +103,7 @@ async def send_question_speaker(callback: CallbackQuery, state: FSMContext, bot:
     bot.google_table.setQuestion(userState["speaker_id"], userState["question"])
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=URLInputFile(IMG),
+        caption=FSInputFile("images/ask-sent.webp"),
         text=f"Ваш вопрос успешно доставлен",
         reply_markup=user_keyboard_main,
     )
@@ -115,7 +118,7 @@ async def cancel(callback: CallbackQuery, state: FSMContext, bot: Bot):
 
     msg = await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=URLInputFile(IMG),
+        caption=FSInputFile("images/action-cancell.webp"),
         text=f"Действие отменено",
         reply_markup=user_keyboard_main,
     )
