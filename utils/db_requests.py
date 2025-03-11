@@ -116,9 +116,9 @@ def copy_quiz_by_id(current_event_id, copyed_event_id):
     cursor.execute(
         f"""
         -- Шаг 2: Создаем временную таблицу для сопоставления quiz_id
-        CREATE TEMPORARY TABLE temp_quiz_mapping (
-            old_quiz_id INT,
-            new_quiz_id INT
+        CREATE TEMP TABLE temp_quiz_mapping (
+            old_quiz_id INTEGER,
+            new_quiz_id INTEGER
         );
         """
     )
@@ -156,7 +156,7 @@ def copy_quiz_by_id(current_event_id, copyed_event_id):
     cursor.execute(
         f"""
         -- Шаг 5: Удаляем временную таблицу
-        DROP TEMPORARY TABLE temp_quiz_mapping;
+        DROP TABLE temp_quiz_mapping;
         """
     )
     DB.commit()

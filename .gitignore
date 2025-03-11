@@ -1,4 +1,4 @@
 **.env
 **.json
 **__pycache__
-**.db
+*/utils/database.db
