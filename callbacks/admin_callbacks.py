@@ -133,18 +133,15 @@ async def setting_event(callback: CallbackQuery, bot: Bot):
         "events",
         callback.data.partition("id=")[2],
     )
-
-    current_event = get_current_event()
-    
     await bot.send_photo_if_exist(
         chat_id=callback.from_user.id,
-        caption=current_event.get("img"),
+        caption=event.get("img"),
         text=f"{event["name"]}\n{event["content"]}\n",
         reply_markup=admin_keyboard_builder_event(event["id"]),
     )
     await bot.send_document_if_exist(
         chat_id=callback.from_user.id,
-        document=current_event.get("document"),
+        document=event.get("document"),
     )
 
 
