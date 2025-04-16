@@ -9,7 +9,7 @@ from handlers import *
 
 
 async def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, filename="py_log.log", filemode="w")
 
     class ZPEventBot(Bot):
         def __init__(self, token, google_table=None):

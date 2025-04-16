@@ -16,10 +16,12 @@ router.message.filter((HasEventFilter()))
 @router.message(Command("start", "restart", "Start", "Restart"))
 async def user_handler_menu(message: Message, bot: Bot):
     set_user(message.from_user.id)
+    
+    current_event = get_current_event()
     await bot.send_photo_if_exist(
         chat_id=message.chat.id,
-        caption=get_current_event()["img"],
-        text=get_current_event()["content"],
+        caption=current_event.get("img"),
+        text=current_event.get("content"),
         reply_markup=user_keyboard_main,
     )
 
@@ -36,10 +38,12 @@ async def user_handler_info(message: Message, bot: Bot):
     except:
         print("Message not found")
 
+    current_event = get_current_event()
+
     await bot.send_chat_action(message.from_user.id, action="typing")
     msg = await bot.send_document_if_exist(
         chat_id=message.chat.id,
-        document=get_current_event()["document"],
+        document=current_event.get("document"),
         reply_markup=user_keyboard_main,
     )
 
